@@ -4,11 +4,6 @@ on:
   push:
     branches: ["main"]
 
-# ÉP TOÀN BỘ MÔI TRƯỜNG CHẠY HỆ NODE 24 VIP PRO
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: false
-
 permissions:
   contents: read
   pages: write
@@ -26,21 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4.2.2 # NÂNG CẤP LÊN BẢN VÁ LỖI MỚI NHẤT
-
-      - name: Setup Node.js 24 (Ép Hệ Thống Thủ Công)
-        uses: actions/setup-node@v4.0.2 # KÍCH NỔ HỆ NODE 24 RIÊNG BIỆT
-        with:
-          node-version: 24
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Pages Gác Cổng
         uses: actions/configure-pages@v5
 
       - name: Build and Upload Artifact
-        uses: actions/upload-pages-artifact@v3.0.1 # NÂNG CẤP BẢN SỬA LỖI ĐƯỜNG TRUYỀN
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages Bất Tử
         id: deployment
-        uses: actions/deploy-pages@v4.0.5 # BẢN CHỐT HẠ OUT TRÌNH KHÔNG WARNING
+        uses: actions/deploy-pages@v4.0.5
