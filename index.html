@@ -555,12 +555,15 @@
       }
 
 
-      // ĐÒN 3: Đóng băng tab ẩn & ĐÒN 4: Quét AFK hủy diệt
+    // ĐÒN 3: Đóng băng tab ẩn & ĐÒN 4: Quét AFK hủy diệt
       document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
               isTabActive = false;
               afkTimeoutId = setTimeout(() => triggerAnnihilation("SESSION_EXPIRED"), MAX_AFK_TIME);
           } else {
+              // 👉 CHÈN ĐÒN PHÒNG THỦ PHỤ VÀO ĐÂY BRO ĐỂ CHẶN FETCH NGẦM:
+              if (document.getElementById('log-box') === null) return;
+
               isTabActive = true;
               if (afkTimeoutId) { clearTimeout(afkTimeoutId); afkTimeoutId = null; }
               lastFetchTime = performance.now();
