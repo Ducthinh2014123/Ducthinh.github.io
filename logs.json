@@ -1,5 +1,11 @@
 [
     {
+        "time": "07:37:00",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
         "time": "07:25:04",
         "type": "info",
         "tag": "EduRank XP",
@@ -172,11 +178,5 @@
         "type": "success",
         "tag": "Gemini Bot",
         "msg": "Bot Gemini đã kết nối Discord Gateway thành công!"
-    },
-    {
-        "time": "05:31:20",
-        "type": "success",
-        "tag": "Bot Cũ",
-        "msg": "Bot Cũ (Bacon) đã kết nối Discord Gateway thành công!"
     }
 ]
