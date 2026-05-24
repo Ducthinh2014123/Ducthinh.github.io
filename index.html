@@ -29,7 +29,7 @@
           position: relative;
       }
 
-      /* Thanh đếm ngược chu kỳ siêu mảnh chạy dưới viền header kkk */
+      /* Thanh đếm ước chu kỳ siêu mảnh chạy dưới viền header kkk */
       .countdown-bar-container {
           position: absolute;
           bottom: -2px;
@@ -181,7 +181,7 @@
           color: #6c7086;
           margin-right: 10px;
           font-weight: bold;
-       }
+      }
       .log-tag {
           padding: 2px 6px;
           border-radius: 3px;
@@ -248,7 +248,7 @@
               </div>
               <div class="log-container" id="log-box">
                   <div class="log-entry log-info">
-                      <span class="log-time"> [Hệ thống] </span><span class="log-tag" onclick="filterLogType('system')">System</span> Đang kết nối tới máy chủ bot của bro... kkk
+                      <span class="log-time"> [Hệ thống] </span><span class="log-tag" onclick="filterLogType('system')">System</span> Đang kết nối tới bộ đệm CDN Microsoft để hốt log... kkk
                   </div>
               </div>
           </div>
@@ -260,7 +260,8 @@
   </div>
 
   <script>
-      const BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
+      // 🔥 BÙA TỐI THƯỢNG: Trỏ thẳng vào file logs.json tĩnh trên Custom Domain gánh RAM hộ Server!
+      const BOT_API_URL = "https://azimalioto.dpdns.org/logs.json";
       
       // ĐÒN 1: Chu kỳ gốc 5 giây
       let cycleTime = 5000;
@@ -381,8 +382,9 @@
           lastFetchTime = startTime;
 
           try {
-              const response = await fetch(BOT_API_URL);
-              if (!response.ok) throw new Error("Network error");
+              // Thêm bùa chú chống cache trình duyệt để log luôn mới nhất khi hốt từ CDN kkk
+              const response = await fetch(`${BOT_API_URL}?t=${new Date().getTime()}`);
+              if (!response.ok) throw new Error("File chưa khởi tạo");
 
               const data = await response.json(); 
               const endTime = performance.now();
@@ -411,8 +413,13 @@
               if (!isScrolledUp) logBox.scrollTop = logBox.scrollHeight;
 
           } catch (error) {
-              statusDot.style.backgroundColor = "#f38ba8";
-              statusText.innerHTML = `Core Engine: DISCONNECTED (Error)`;
+              statusDot.style.backgroundColor = "#fab387";
+              statusText.innerHTML = `Core Engine: CONNECTING (Chờ bộ đệm CDN...)`;
+              
+              // Nếu là lần đầu load chưa có file logs.json trên repo, giữ nguyên dòng thông báo hệ thống
+              if (isFirstLoad) {
+                  logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Mạng</span> Đang kết nối và chờ file tổng bên HidenCloud đẩy log tĩnh lên CDN Microsoft... kkk</div>`;
+              }
           }
       }
 
