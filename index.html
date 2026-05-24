@@ -29,6 +29,7 @@
           position: relative;
       }
 
+      /* Thanh đếm ước chu kỳ siêu mảnh chạy dưới viền header kkk */
       .countdown-bar-container {
           position: absolute;
           bottom: -2px;
@@ -135,6 +136,7 @@
           gap: 15px;
       }
 
+      /* Nút tải lại thủ công siêu gọn gàng màu Cam nhẹ kkk */
       .btn-clear-manual {
           background: transparent;
           border: 1px solid #fab387;
@@ -187,7 +189,6 @@
           font-weight: bold;
           margin-right: 8px;
           text-transform: uppercase;
-          cursor: pointer;
       }
 
       .log-info { border-left-color: #89b4fa; color: #cdd6f4; }
@@ -255,21 +256,20 @@
 
   <script>
       // ==============================================================================
-      // 🧠 TRẠM GÁC CỔNG PURE FLASK HTTP - KHÔNG CHỨA CODE RÁC kkk
+      // 🧠 THUẬT TOÁN ĐỚP LOG FLASK HTTP THUẦN KHIẾT - ANTI AUTO-SCROLL BUG VIP ⚡
       // ==============================================================================
       const BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
-      let cycleTime = 5000;
+      let cycleTime = 5000; // Cứng 5 giây chu kỳ gốc bàn thờ kkk
       
-      const MAX_SESSION_TIME = 3600000;
-      const MAX_AFK_TIME = 900000;
+      const MAX_SESSION_TIME = 3600000; // Đòn bảo vệ: Xem 1 tiếng tự hủy diệt
+      const MAX_AFK_TIME = 900000;      // Đòn ẩn tab: Đổi tab 15 phút tự ngắt kết nối
 
       let lastFetchTime = performance.now();
       const startTimeSession = performance.now();
       let currentFilter = null;
       let isFirstLoad = true;
       let isTabActive = true;
-      let isScrolledUp = false; 
-      let isSystemUpdating = false; // 🔥 CHỐT CHẶN: Ngăn hệ thống tự bóp dái khi tự xóa log kkk!
+      let isScrolledUp = false; // Trạng thái Admin đang giữ chuột đọc log cũ
       let afkTimeoutId = null;
       let lastManualReloadTime = 0;
 
@@ -289,6 +289,7 @@
           } catch (e) {}
       }
 
+      // 🔥 THUẬT TOÁN ĐIỀU TỐC TỰ ĐỘNG BẢO VỆ CON FLASK TRÊN VPS
       function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -311,12 +312,14 @@
               return;
           }
 
+          // Kiểm tra nếu Admin đang rê chuột vào bảng log cũ
           if (isScrolledUp) {
               indicator.innerText = "⏸️ Đã tạm dừng cập nhật (Đang đọc log cũ)";
               indicator.style.color = "#cba6f7";
               return;
           }
 
+          // Điều tốc tự động theo thời gian xem để cứu rỗi tài nguyên VPS kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -367,24 +370,17 @@
               statusDot.style.backgroundColor = "#a6e3a1";
               statusText.innerHTML = `Core Engine: ACTIVE (<span id="ping-text" style="color: #a6e3a1;">${pingTime}ms</span>)`;
 
-              // BẬT CHỐT KHÓA: Báo cho trình duyệt biết hệ thống đang tự render, cấm kích hoạt ScrollUp ảo!
-              isSystemUpdating = true;
-
               logBox.innerHTML = "";
               data.forEach(log => {
                   const logEntry = document.createElement('div');
                   logEntry.className = `log-entry log-${log.type}`;
-                  logEntry.setAttribute('data-type', log.type);
                   logEntry.innerHTML = `<span class="log-time">[${log.time}]</span> <span class="log-tag">${log.tag}</span> ${log.msg}`;
                   logBox.appendChild(logEntry);
                   if (log.type === 'error') playBeepSound(440, 300);
               });
 
-              applyLogFilter();
-              
-              // Cuộn mượt xuống đáy bảng log và tắt chốt khóa
+              // Luôn cuộn mượt xuống đáy bảng log, chấp mọi loại độ trễ render của Chrome kkk!
               logBox.scrollTop = logBox.scrollHeight;
-              setTimeout(() => { isSystemUpdating = false; }, 50);
 
           } catch (error) {
               statusDot.style.backgroundColor = "#f38ba8";
@@ -392,7 +388,6 @@
               if (isFirstLoad) {
                   logBox.innerHTML = `<div class="log-entry log-error"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Cổng</span> Khum kết nối được tới cổng Flask 24606 trên HidenCloud! Nếu dính lỗi Mixed Content (HTTPS chặn HTTP) trên Chrome, vui lòng bấm vào ổ khóa bên cạnh thanh URL -> Chọn Site Settings -> Cuộn xuống tìm mục Insecure content -> Chuyển sang Allow (Cho phép) rồi F5 lại trang nhem bro! kkk</div>`;
               }
-              isSystemUpdating = false;
           }
       }
 
@@ -413,9 +408,7 @@
           btnClear.style.opacity = '0.5';
           btnClear.innerText = 'Đang tải...';
 
-          currentFilter = null;
           isScrolledUp = false;
-          isSystemUpdating = true;
           logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Clear</span> Đang làm sạch Console và nã lệnh Fetch thủ công...</div>`;
           
           statusDot.style.backgroundColor = "#fab387";
@@ -427,14 +420,6 @@
                   btnClear.style.opacity = '1';
                   btnClear.innerText = 'Clear Log & Tải lại';
               }, 2000);
-          });
-      }
-
-      function applyLogFilter() {
-          const entries = document.querySelectorAll('.log-entry');
-          entries.forEach(entry => {
-              const entryType = entry.getAttribute('data-type');
-              if (!currentFilter || entryType === currentFilter) { entry.style.display = 'block'; } else { entry.style.display = 'none'; }
           });
       }
 
@@ -469,6 +454,24 @@
           `;
       }
 
+      // 🔥 THUẬT TOÁN GÁC CỔNG THỰC CHIẾN MỚI: BẮT THEO HÀNH VI CHUỘT ADMIN, CHẤP MỌI LOẠI BUG CUỘN LỎ CỦA CHROME!
+      const logBoxElement = document.getElementById('log-box');
+
+      // Khi Admin di chuột vào bảng log: Tạm dừng luồng để thong thả đọc log cũ
+      logBoxElement.addEventListener('mouseenter', () => {
+          isScrolledUp = true;
+          adjustTrafficSpeed();
+      });
+
+      // Khi Admin bỏ chuột ra ngoài: Tiếp tục đếm ngược hốt log real-time lập tức kkk
+      logBoxElement.addEventListener('mouseleave', () => {
+          isScrolledUp = false;
+          lastFetchTime = performance.now();
+          adjustTrafficSpeed();
+          fetchLiveLogs();
+      });
+
+      // Bắt sự kiện ẩn tab hoặc đổi tab
       document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
               isTabActive = false;
@@ -482,22 +485,10 @@
           }
       });
 
-      // 🔥 ĐÒN THỰC CHIẾN ĐÃ ĐƯỢC FIX LỖI VẼ ĐÈ: Chỉ tính scroll khi không có hệ thống update chạy ngầm!
-      const logBoxElement = document.getElementById('log-box');
-      logBoxElement.addEventListener('scroll', () => {
-          if (isSystemUpdating) return; // Nếu hệ thống tự vẽ log thì bỏ qua cmnl khum tính kkk!
-          
-          const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 15;
-          if (!isAtBottom) {
-              if (!isScrolledUp) { isScrolledUp = true; adjustTrafficSpeed(); }
-          } else {
-              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); adjustTrafficSpeed(); fetchLiveLogs(); }
-          }
-      });
-
       window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
       window.addEventListener('offline', () => { adjustTrafficSpeed(); });
 
+      // Khởi động trạm gác vĩnh viễn
       fetchLiveLogs();
       requestAnimationFrame(updateCountdown);
   </script>
