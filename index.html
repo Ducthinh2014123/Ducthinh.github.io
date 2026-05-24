@@ -260,11 +260,23 @@
   </div>
 
   <script>
-      // 🔥 BÙA TỐI THƯỢNG: Trỏ thẳng vào file logs.json tĩnh trên Custom Domain gánh RAM hộ Server!
-      const BOT_API_URL = "https://azimalioto.dpdns.org/logs.json";
-      
-      // ĐÒN 1: Chu kỳ gốc 5 giây
-      let cycleTime = 5000;
+      // ==============================================================================
+      // 🧠 THUẬT TOÁN PHÂN LUỒNG: DIỆT DELAY CHO ADMIN VIP - ĐẨY TẠ CHO KHÁCH
+      // ==============================================================================
+      const urlParams = new URLSearchParams(window.location.search);
+      const isAdmin = urlParams.get('admin') === 'true';
+
+      let BOT_API_URL = "";
+      let cycleTime = 5000; // Chu kỳ gốc 5 giây
+
+      if (isAdmin) {
+          // 👑 LUỒNG VIP (Dành riêng cho bro): Gọi thẳng Flask HidenCloud - REAL-TIME 5S KHUM DELAY!
+          BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
+          console.log("⚡ Chế độ ADMIN VIP: Kết nối trực tiếp Flask!");
+      } else {
+          // 👤 LUỒNG KHÁCH: Đớp tệp tĩnh trên CDN Microsoft gánh RAM hộ Server cmnl
+          BOT_API_URL = "https://azimalioto.dpdns.org/logs.json";
+      }
       
       // ĐÒN ÉP TIẾN ĐỘ: Treo máy liên tục đúng 1 tiếng tự động hủy diệt (3600000ms)
       const MAX_SESSION_TIME = 3600000;
@@ -284,7 +296,6 @@
       let lastManualReloadTime = 0;
 
       function playBeepSound(frequency, duration) {
-          // ĐÒN 7: Nếu mất mạng thì cấm phát ra tiếng kêu lỗi phiền phức
           if (!isTabActive || isScrolledUp || !navigator.onLine) return;
           try {
               const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -303,17 +314,15 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN
-      function adjustTrafficSpeed() {
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN Real-time
+      async function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
-          // KIỂM TRA ĐÒN ÉP 1 TIẾNG: Quá thời gian là trục xuất!
           if (elapsedSession >= MAX_SESSION_TIME) {
               triggerAnnihilation("SESSION_EXPIRED");
               return;
           }
 
-          // ĐÒN 10: TRỤC XUẤT ĐÊM KHUYA (Treo quá 30 phút trong khoảng từ 23h đến 5h sáng)
           const currentHour = new Date().getHours();
           if ((currentHour >= 23 || currentHour < 5) && elapsedSession > 1800000) {
               triggerAnnihilation("MIDNIGHT_SLEEP");
@@ -322,37 +331,50 @@
 
           const indicator = document.getElementById('cycle-indicator');
           
-          // ĐÒN 7: KIỂM TRA MẤT MẠNG INTERNET
           if (!navigator.onLine) {
               indicator.innerText = "❌ Đã tạm dừng (Mất kết nối mạng Internet)";
               indicator.style.color = "#f38ba8";
               return;
           }
 
-          // ĐÒN 6: ĐANG ĐỌC LOG CŨ
           if (isScrolledUp) {
               indicator.innerText = "⏸️ Đã tạm dừng cập nhật (Đang đọc log cũ)";
               indicator.style.color = "#cba6f7";
               return;
           }
 
-          // ĐÒN 9: ĐẦU ĐỘC KHÁCH ẨN DANH / ANONYMOUS SPAMMER (Ép xuống 30s/lần)
-          const isIncognito = (window.localStorage && window.localStorage.length === 0) || !window.indexedDB;
-          if (isIncognito) {
+          // 🛡️ ĐÒN 9 HỆ CẬP NHẬT 2026: Quét ẩn danh bằng Hạn mức bộ nhớ (Không lo lỗi vặt User mới nữa cmnl)
+          let isIncognito = false;
+          if (navigator.storage && navigator.storage.estimate) {
+              const { quota } = await navigator.storage.estimate();
+              if (quota < 120 * 1024 * 1024) { // Trình ẩn danh luôn bị Chrome bóp bộ nhớ < 120MB
+                  isIncognito = true;
+              }
+          }
+
+          if (isIncognito && !isAdmin) {
               cycleTime = 30000;
               indicator.innerText = "Tự động cập nhật: 30s/lần (Chế độ khách ẩn danh)";
               indicator.style.color = "#f38ba8";
               return;
           }
 
-          // ĐÒN 5: ĐIỀU TỐC THEO THỜI GIAN TREO MÁY REAL-TIME
-          if (elapsedSession > 900000) { // Sau 15 phút -> 20s/lần
+          // Nếu là ADMIN VIP, ép cứng chu kỳ 5 giây cấm giảm tốc kkk
+          if (isAdmin) {
+              cycleTime = 5000;
+              indicator.innerText = "Tự động cập nhật: 5s/lần (Chế độ ADMIN VIP ⚡)";
+              indicator.style.color = "#89b4fa";
+              return;
+          }
+
+          // Điều tốc cho khách thường gánh tạ
+          if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
                   indicator.innerText = "Tự động cập nhật: 20s/lần (Chế độ tiết kiệm RAM)";
                   indicator.style.color = "#f38ba8";
               }
-          } else if (elapsedSession > 300000) { // Sau 5 phút -> 10s/lần
+          } else if (elapsedSession > 300000) {
               if (cycleTime !== 10000) {
                   cycleTime = 10000;
                   indicator.innerText = "Tự động cập nhật: 10s/lần (Bảo vệ VPS)";
@@ -366,13 +388,10 @@
       }
 
       async function fetchLiveLogs() {
-          // 👉 ĐÒN PHÒNG THỦ TỐI CAO: Nếu giao diện đã bị hủy diệt (màn hình đen), cấm tuyệt đối fetch ngầm!
           if (document.getElementById('log-box') === null) return;
-
-          // ĐÒN 3 + ĐÒN 6 + ĐÒN 7: NẾU ẨN TAB, ĐỌC LOG CŨ HOẶC MẤT MẠNG -> CẤM FETCH!
           if (!isTabActive || isScrolledUp || !navigator.onLine) return;
 
-          adjustTrafficSpeed();
+          await adjustTrafficSpeed();
 
           const logBox = document.getElementById('log-box');
           const statusDot = document.getElementById('status-dot');
@@ -382,9 +401,10 @@
           lastFetchTime = startTime;
 
           try {
-              // Thêm bùa chú chống cache trình duyệt để log luôn mới nhất khi hốt từ CDN kkk
-              const response = await fetch(`${BOT_API_URL}?t=${new Date().getTime()}`);
-              if (!response.ok) throw new Error("File chưa khởi tạo");
+              // Bùa chống cache khi hốt file tĩnh, còn Admin thì đớp trực tiếp Flask kkk
+              const fetchUrl = isAdmin ? BOT_API_URL : `${BOT_API_URL}?t=${new Date().getTime()}`;
+              const response = await fetch(fetchUrl);
+              if (!response.ok) throw new Error("Lỗi kết nối");
 
               const data = await response.json(); 
               const endTime = performance.now();
@@ -413,17 +433,19 @@
               if (!isScrolledUp) logBox.scrollTop = logBox.scrollHeight;
 
           } catch (error) {
-              statusDot.style.backgroundColor = "#fab387";
-              statusText.innerHTML = `Core Engine: CONNECTING (Chờ bộ đệm CDN...)`;
-              
-              // Nếu là lần đầu load chưa có file logs.json trên repo, giữ nguyên dòng thông báo hệ thống
-              if (isFirstLoad) {
-                  logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Mạng</span> Đang kết nối và chờ file tổng bên HidenCloud đẩy log tĩnh lên CDN Microsoft... kkk</div>`;
+              if (isAdmin) {
+                  statusDot.style.backgroundColor = "#f38ba8";
+                  statusText.innerHTML = `Core Engine: DISCONNECTED (Kiểm tra Flask HTTP...)`;
+              } else {
+                  statusDot.style.backgroundColor = "#fab387";
+                  statusText.innerHTML = `Core Engine: CONNECTING (Chờ bộ đệm CDN...)`;
+                  if (isFirstLoad) {
+                      logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Mạng</span> Đang kết nối và chờ file tổng đẩy log tĩnh lên CDN... kkk</div>`;
+                  }
               }
           }
       }
 
-      // ĐÒN 2 + ĐÒN 8: BẪY CHỐNG CLICK SPAM REFRESH
       function forceClearAndReload() {
           const now = performance.now();
           if (now - lastManualReloadTime < 4000) {
@@ -470,13 +492,13 @@
           });
       }
 
-      function updateCountdown() {
+      async function updateCountdown() {
           if (!isTabActive || isScrolledUp || !navigator.onLine) {
               requestAnimationFrame(updateCountdown);
               return;
           }
 
-          adjustTrafficSpeed();
+          await adjustTrafficSpeed();
 
           const now = performance.now();
           const elapsedTime = now - lastFetchTime;
@@ -485,13 +507,12 @@
           document.getElementById('countdown-bar').style.width = percentage + '%';
 
           if (elapsedTime >= cycleTime) {
-              fetchLiveLogs();
+              await fetchLiveLogs();
           }
 
           requestAnimationFrame(updateCountdown);
       }
 
-      // LỆNH THANH TRỪNG ADMIN: KÍCH NỔ KICK OUT
       function triggerAnnihilation(reason) {
           isTabActive = false;
           let noticeTitle = "SESSION TIME EXPIRED";
@@ -511,13 +532,11 @@
           `;
       }
 
-    // ĐÒN 3: Đóng băng tab ẩn & ĐÒN 4: Quét AFK hủy diệt
       document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
               isTabActive = false;
               afkTimeoutId = setTimeout(() => triggerAnnihilation("SESSION_EXPIRED"), MAX_AFK_TIME);
           } else {
-              // 👉 CHÈN ĐÒN PHÒNG THỦ PHỤ VÀO ĐÂY BRO ĐỂ CHẶN FETCH NGẦM:
               if (document.getElementById('log-box') === null) return;
 
               isTabActive = true;
@@ -527,7 +546,6 @@
           }
       });
 
-      // ĐÒN 6: Theo dõi hành vi cuộn chuột
       const logBoxElement = document.getElementById('log-box');
       logBoxElement.addEventListener('scroll', () => {
           const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 5;
@@ -538,7 +556,6 @@
           }
       });
 
-      // Lắng nghe trạng thái mạng thời gian thực
       window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
       window.addEventListener('offline', () => { adjustTrafficSpeed(); });
 
