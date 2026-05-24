@@ -1,5 +1,83 @@
 [
     {
+        "time": "05:31:21",
+        "type": "success",
+        "tag": "Gemini Bot",
+        "msg": "Bot Gemini đã kết nối Discord Gateway thành công!"
+    },
+    {
+        "time": "05:31:20",
+        "type": "success",
+        "tag": "Bot Cũ",
+        "msg": "Bot Cũ (Bacon) đã kết nối Discord Gateway thành công!"
+    },
+    {
+        "time": "05:31:20",
+        "type": "success",
+        "tag": "EduRank",
+        "msg": "Bot EduRank đã kết nối Discord Gateway thành công!"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "System",
+        "msg": "Trạm tổng đã vào vị trí gác đền. Hệ thống Core Engine sẵn sàng 24/7 cmnl!"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "MyNekoBot",
+        "msg": "Đã kích hoạt đặc vụ MyNekoBot chạy ngầm từ thư mục my-neko-bot! kkk"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Env",
+        "msg": "Đã nạp thành công file: my-neko-bot/.env"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "EduRank",
+        "msg": "Đã bốc đầu thành công main.py chạy ngầm trong thư mục Edurank! kkk"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Env",
+        "msg": "Đã nạp thành công file: Edurank/.env"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Gemini",
+        "msg": "Đã bật Bot Gemini từ thư mục con chạy ngầm!"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Env",
+        "msg": "Đã nạp thành công file: gemini-bot/.env"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Bot Cũ",
+        "msg": "Đã bật Bot Cũ (Bacon) chạy ngầm vĩnh viễn!"
+    },
+    {
+        "time": "05:31:16",
+        "type": "success",
+        "tag": "Env",
+        "msg": "Đã nạp thành công file: .env"
+    },
+    {
+        "time": "05:31:16",
+        "type": "info",
+        "tag": "System",
+        "msg": "Đang kích hoạt chế độ chạy đa file .env độc lập..."
+    },
+    {
         "time": "05:31:16",
         "type": "success",
         "tag": "Sponsor",
