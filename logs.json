@@ -1,5 +1,11 @@
 [
     {
+        "time": "05:57:54",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
         "time": "05:44:49",
         "type": "info",
         "tag": "EduRank Req",
@@ -172,11 +178,5 @@
         "type": "success",
         "tag": "Env",
         "msg": "Đã nạp thành công file: my-neko-bot/.env"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "EduRank",
-        "msg": "Đã bốc đầu thành công main.py chạy ngầm trong thư mục Edurank! kkk"
     }
 ]
