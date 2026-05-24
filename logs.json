@@ -1,5 +1,11 @@
 [
     {
+        "time": "05:20:15",
+        "type": "success",
+        "tag": "Gemini Bot",
+        "msg": "Bot Gemini đã kết nối Discord Gateway thành công!"
+    },
+    {
         "time": "05:20:13",
         "type": "success",
         "tag": "Bot Cũ",
