@@ -1,7 +1,9 @@
 name: Deploy GitHub Pages
 
 on:
-  workflow_dispatch:    # ⚡ BÙA TÀNG HÌNH CHÍNH THỨC LÊN NÒNG cmnl!
+  push:
+    branches: ["main"]    # 🔥 ĐÃ GẮN LẠI NGÒI NỔ: Commit phát là tự động kích hoạt bốc đầu luôn!
+  workflow_dispatch:    # Vẫn giữ bùa tàng hình chạy thủ công khi cần kkk
 
 # NỆN LẠI QUẢ BÙA LỢI THEO LỆNH CHỦ TỊCH NHEM KKK!
 env:
