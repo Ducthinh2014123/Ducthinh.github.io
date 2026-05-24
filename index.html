@@ -307,13 +307,14 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // 👑 HÀM UY TÍN: Cho phép Admin/Người nhà tự cấp Token mở khóa tốc độ cao kkk
+      // 👑 HÀM UY TÍN: Click chuột phát là lưu Token mở khóa tốc độ cao ngay cmnl kkk
       function verifyTrustedUser() {
           localStorage.setItem("hc_trusted_device", "verified_2026_vip");
-          location.reload();
+          console.log("🔓 Thiết bị đã được xác minh thành công!");
+          window.location.reload();
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (BẤT BẠI TRƯỚC INCOGNITO)
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (ĐÃ FIX KHÓA CHỮ CHỐNG ĐÈ NÚT BẤM 🚀)
       function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -342,24 +343,33 @@
               return;
           }
 
-          // 🛡️ ĐÒN QUÉT TÂM LÝ: Ẩn danh bật lên sẽ KHÔNG CÓ Token lưu trữ cũ cmnl!
+          // 🛡️ ĐÒN QUÉT TÂM LÝ: Thiết bị ẩn danh / Profile lạ khum có Token sẽ ăn ngay chữ đỏ kkk
           const isTrusted = localStorage.getItem("hc_trusted_device") === "verified_2026_vip";
 
           if (!isTrusted && !isAdmin) {
               cycleTime = 30000;
-              indicator.innerHTML = `Tự động cập nhật: 30s/lần (Khách chưa định danh) <span style="color:#89b4fa; font-weight:bold; cursor:pointer; text-decoration:underline; margin-left:5px;" onclick="verifyTrustedUser()">[XÁC MINH NGƯỜI NHÀ KHUM DELAY]</span>`;
-              indicator.style.color = "#f38ba8";
+              
+              // Tạo chuỗi HTML tĩnh cố định ngòi nổ
+              const targetHTML = `Tự động cập nhật: 30s/lần (Khách chưa định danh) <span style="color:#89b4fa; font-weight:bold; cursor:pointer; text-decoration:underline; margin-left:5px;" onclick="verifyTrustedUser()">[XÁC MINH NGƯỜI NHÀ KHUM DELAY]</span>`;
+              
+              // 🔥 ĐÒN CHỐT CHẶN: Chỉ vẽ lại khi chữ khác nhau, chặn hoàn toàn luồng requestAnimationFrame đè nút!
+              if (indicator.innerHTML !== targetHTML) {
+                  indicator.innerHTML = targetHTML;
+                  indicator.style.color = "#f38ba8";
+              }
               return;
           }
 
           if (isAdmin) {
               cycleTime = 5000;
-              indicator.innerText = "Tự động cập nhật: 5s/lần (Chế độ ADMIN VIP ⚡)";
-              indicator.style.color = "#89b4fa";
+              if (indicator.innerText !== "Tự động cập nhật: 5s/lần (Chế độ ADMIN VIP ⚡)") {
+                  indicator.innerText = "Tự động cập nhật: 5s/lần (Chế độ ADMIN VIP ⚡)";
+                  indicator.style.color = "#89b4fa";
+              }
               return;
           }
 
-          // Luồng mượt mà dành riêng cho thiết bị đã bấm nút xác minh / F5 khum lo mất kkk
+          // Điều tốc mượt mà cho thiết bị người nhà đã bấm xác minh kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -373,9 +383,11 @@
                   indicator.style.color = "#f9e2af";
               }
           } else {
-              cycleTime = 5000;
-              indicator.innerText = "Tự động cập nhật: 5s/lần";
-              indicator.style.color = "#a6adc8";
+              if (cycleTime !== 5000 || indicator.style.color !== "rgb(166, 173, 200)") {
+                  cycleTime = 5000;
+                  indicator.innerText = "Tự động cập nhật: 5s/lần";
+                  indicator.style.color = "#a6adc8";
+              }
           }
       }
 
