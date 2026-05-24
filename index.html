@@ -307,25 +307,39 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // 🕵️‍♂️ BÙA QUÉT ẨN DANH THẾ HỆ MỚI 2 TẦNG BẤT BẠI kkk
+      // 🕵️‍♂️ BẬT HỔ BA TẦNG BẤT BẠI - BẮT SỐNG CHROMIUM INCOGNITO 2026!
       async function checkIsIncognito() {
           if (isAdmin) return false;
           try {
-              // Tầng 1: Check thông qua hạn mức Quota đĩa cứng (Tab ẩn danh của Chrome luôn bị bóp dưới 120MB)
+              // Tầng 1: Đòn khóa cứng Webkit Temporary Storage (Trình duyệt thường gõ phát ăn ngay, ẩn danh văng lỗi cmnl)
+              if (navigator.webkitTemporaryStorage && navigator.webkitTemporaryStorage.queryUsageAndQuota) {
+                  const isIncognitoStorage = await new Promise(resolve => {
+                      navigator.webkitTemporaryStorage.queryUsageAndQuota(
+                          () => resolve(false), 
+                          () => resolve(true)   
+                      );
+                  });
+                  if (isIncognitoStorage) return true;
+              }
+
+              // Tầng 2: Bẫy phụ check thông qua IndexedDB chặn ghi đè của tab ẩn danh
+              const isIncognitoDB = await new Promise(resolve => {
+                  const db = indexedDB.open("test_incognito_v3");
+                  db.onsuccess = () => resolve(false);
+                  db.onerror = () => resolve(true);
+              });
+              if (isIncognitoDB) return true;
+              
+              // Tầng 3: Check bẫy quota đĩa cứng phòng thủ chiều sâu
               if (navigator.storage && navigator.storage.estimate) {
                   const { quota } = await navigator.storage.estimate();
                   if (quota && quota < 120 * 1024 * 1024) return true;
               }
-              // Tầng 2: Bẫy phụ check thông qua phản hồi lỗi khởi tạo IndexedDB của trình duyệt ẩn danh
-              return await new Promise(resolve => {
-                  const db = indexedDB.open("test_incognito_v2");
-                  db.onsuccess = () => resolve(false);
-                  db.onerror = () => resolve(true);
-              });
+              return false;
           } catch (e) { return false; }
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (ĐÃ FIX ASYNC MƯỢT MÀ)
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN Real-time
       async function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -354,7 +368,7 @@
               return;
           }
 
-          // Gọi bùa check ẩn danh xịn bằng cơ chế đồng bộ cứng await
+          // Kích hoạt bùa quét ẩn danh 3 tầng đồng bộ cứng
           const isIncognito = await checkIsIncognito();
 
           if (isIncognito) {
@@ -371,7 +385,7 @@
               return;
           }
 
-          // Điều tốc cho người nhà / khách thường húp mượt mà khum nghẽn kkk
+          // Điều tốc cho người nhà / khách thường húp mượt mà khum nhận nhầm kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -495,7 +509,6 @@
           });
       }
 
-      // Sửa đồng bộ vòng lặp đếm ngược chuẩn chỉnh async cmnl kkk
       async function updateCountdown() {
           if (!isTabActive || isScrolledUp || !navigator.onLine) {
               requestAnimationFrame(updateCountdown);
@@ -563,7 +576,7 @@
       window.addEventListener('online', async () => { lastFetchTime = performance.now(); await fetchLiveLogs(); });
       window.addEventListener('offline', async () => { await adjustTrafficSpeed(); });
 
-      // Khởi động trạm
+      // Khởi động trạm ngầm hệ VIP 2026
       (async () => {
           await fetchLiveLogs();
           requestAnimationFrame(updateCountdown);
