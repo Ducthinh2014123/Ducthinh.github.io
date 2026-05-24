@@ -105,7 +105,7 @@
           max-width: 1400px;
           width: 100%;
           margin: 0 auto;
-      }
+       }
       .panel {
           background-color: #1e1e2e;
           border: 1px solid #313244;
@@ -270,18 +270,13 @@
       let cycleTime = 5000; // Chu kỳ gốc 5 giây
 
       if (isAdmin) {
-          // 👑 LUỒNG VIP (Dành riêng cho bro): Gọi thẳng Flask HidenCloud - REAL-TIME 5S KHUM DELAY!
           BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
           console.log("⚡ Chế độ ADMIN VIP: Kết nối trực tiếp Flask!");
       } else {
-          // 👤 LUỒNG KHÁCH: Đớp tệp tĩnh trên CDN Microsoft gánh RAM hộ Server cmnl
           BOT_API_URL = "https://azimalioto.dpdns.org/logs.json";
       }
       
-      // ĐÒN ÉP TIẾN ĐỘ: Treo máy liên tục đúng 1 tiếng tự động hủy diệt (3600000ms)
       const MAX_SESSION_TIME = 3600000;
-      
-      // ĐÒN 4: Hủy diệt AFK sau 15 phút nếu người dùng ẩn tab (900000ms)
       const MAX_AFK_TIME = 900000;
 
       let lastFetchTime = performance.now();
@@ -289,10 +284,8 @@
       let currentFilter = null;
       let isFirstLoad = true;
       let isTabActive = true;
-      let isScrolledUp = false; // ĐÒN 6
+      let isScrolledUp = false; 
       let afkTimeoutId = null;
-      
-      // ĐÒN 8: Biến chặn spam click chuột
       let lastManualReloadTime = 0;
 
       function playBeepSound(frequency, duration) {
@@ -314,7 +307,20 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN Real-time
+      // Hàm check ẩn danh chuẩn tối cao dựa trên File System API ẩn của Chrome kkk
+      async function checkIsIncognito() {
+          if (isAdmin) return false;
+          try {
+              // Trình duyệt thường của User mới luôn cấp quyền ghi file hệ thống, ẩn danh thì KHÔNG cmnl!
+              const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
+              if (!fs) return false;
+              return await new Promise(resolve => {
+                  fs(window.TEMPORARY, 100, () => resolve(false), () => resolve(true));
+              });
+          } catch (e) { return false; }
+      }
+
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (ĐÃ FIX ASYNC KHÔNG LẠO LUỒNG)
       async function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -343,23 +349,16 @@
               return;
           }
 
-          // 🛡️ ĐÒN 9 HỆ CẬP NHẬT 2026: Quét ẩn danh bằng Hạn mức bộ nhớ (Không lo lỗi vặt User mới nữa cmnl)
-          let isIncognito = false;
-          if (navigator.storage && navigator.storage.estimate) {
-              const { quota } = await navigator.storage.estimate();
-              if (quota < 120 * 1024 * 1024) { // Trình ẩn danh luôn bị Chrome bóp bộ nhớ < 120MB
-                  isIncognito = true;
-              }
-          }
+          // Gọi bùa check ẩn danh xịn bằng cơ chế đồng bộ cứng
+          const isIncognito = await checkIsIncognito();
 
-          if (isIncognito && !isAdmin) {
+          if (isIncognito) {
               cycleTime = 30000;
               indicator.innerText = "Tự động cập nhật: 30s/lần (Chế độ khách ẩn danh)";
               indicator.style.color = "#f38ba8";
               return;
           }
 
-          // Nếu là ADMIN VIP, ép cứng chu kỳ 5 giây cấm giảm tốc kkk
           if (isAdmin) {
               cycleTime = 5000;
               indicator.innerText = "Tự động cập nhật: 5s/lần (Chế độ ADMIN VIP ⚡)";
@@ -367,7 +366,7 @@
               return;
           }
 
-          // Điều tốc cho khách thường gánh tạ
+          // Điều tốc cho người nhà / khách thường húp mượt mà khum nghẽn kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -401,7 +400,6 @@
           lastFetchTime = startTime;
 
           try {
-              // Bùa chống cache khi hốt file tĩnh, còn Admin thì đớp trực tiếp Flask kkk
               const fetchUrl = isAdmin ? BOT_API_URL : `${BOT_API_URL}?t=${new Date().getTime()}`;
               const response = await fetch(fetchUrl);
               if (!response.ok) throw new Error("Lỗi kết nối");
@@ -492,6 +490,7 @@
           });
       }
 
+      // Sửa đồng bộ vòng lặp đếm ngược chuẩn chỉnh async cmnl kkk
       async function updateCountdown() {
           if (!isTabActive || isScrolledUp || !navigator.onLine) {
               requestAnimationFrame(updateCountdown);
@@ -532,7 +531,7 @@
           `;
       }
 
-      document.addEventListener("visibilitychange", () => {
+      document.addEventListener("visibilitychange", async () => {
           if (document.hidden) {
               isTabActive = false;
               afkTimeoutId = setTimeout(() => triggerAnnihilation("SESSION_EXPIRED"), MAX_AFK_TIME);
@@ -542,25 +541,28 @@
               isTabActive = true;
               if (afkTimeoutId) { clearTimeout(afkTimeoutId); afkTimeoutId = null; }
               lastFetchTime = performance.now();
-              fetchLiveLogs();
+              await fetchLiveLogs();
           }
       });
 
       const logBoxElement = document.getElementById('log-box');
-      logBoxElement.addEventListener('scroll', () => {
+      logBoxElement.addEventListener('scroll', async () => {
           const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 5;
           if (!isAtBottom) {
-              if (!isScrolledUp) { isScrolledUp = true; adjustTrafficSpeed(); }
+              if (!isScrolledUp) { isScrolledUp = true; await adjustTrafficSpeed(); }
           } else {
-              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); adjustTrafficSpeed(); fetchLiveLogs(); }
+              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); await adjustTrafficSpeed(); await fetchLiveLogs(); }
           }
       });
 
-      window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
-      window.addEventListener('offline', () => { adjustTrafficSpeed(); });
+      window.addEventListener('online', async () => { lastFetchTime = performance.now(); await fetchLiveLogs(); });
+      window.addEventListener('offline', async () => { await adjustTrafficSpeed(); });
 
-      fetchLiveLogs();
-      requestAnimationFrame(updateCountdown);
+      // Khởi động trạm
+      (async () => {
+          await fetchLiveLogs();
+          requestAnimationFrame(updateCountdown);
+      })();
   </script>
 </body>
 </html>
