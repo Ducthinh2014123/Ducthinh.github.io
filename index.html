@@ -307,20 +307,25 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // Hàm check ẩn danh chuẩn tối cao dựa trên File System API ẩn của Chrome kkk
+      // 🕵️‍♂️ BÙA QUÉT ẨN DANH THẾ HỆ MỚI 2 TẦNG BẤT BẠI kkk
       async function checkIsIncognito() {
           if (isAdmin) return false;
           try {
-              // Trình duyệt thường của User mới luôn cấp quyền ghi file hệ thống, ẩn danh thì KHÔNG cmnl!
-              const fs = window.RequestFileSystem || window.webkitRequestFileSystem;
-              if (!fs) return false;
+              // Tầng 1: Check thông qua hạn mức Quota đĩa cứng (Tab ẩn danh của Chrome luôn bị bóp dưới 120MB)
+              if (navigator.storage && navigator.storage.estimate) {
+                  const { quota } = await navigator.storage.estimate();
+                  if (quota && quota < 120 * 1024 * 1024) return true;
+              }
+              // Tầng 2: Bẫy phụ check thông qua phản hồi lỗi khởi tạo IndexedDB của trình duyệt ẩn danh
               return await new Promise(resolve => {
-                  fs(window.TEMPORARY, 100, () => resolve(false), () => resolve(true));
+                  const db = indexedDB.open("test_incognito_v2");
+                  db.onsuccess = () => resolve(false);
+                  db.onerror = () => resolve(true);
               });
           } catch (e) { return false; }
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (ĐÃ FIX ASYNC KHÔNG LẠO LUỒNG)
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (ĐÃ FIX ASYNC MƯỢT MÀ)
       async function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -349,7 +354,7 @@
               return;
           }
 
-          // Gọi bùa check ẩn danh xịn bằng cơ chế đồng bộ cứng
+          // Gọi bùa check ẩn danh xịn bằng cơ chế đồng bộ cứng await
           const isIncognito = await checkIsIncognito();
 
           if (isIncognito) {
