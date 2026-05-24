@@ -164,7 +164,7 @@
           font-size: 13px;
           line-height: 1.6;
           scroll-behavior: smooth;
-      }
+       }
       .log-entry {
           padding: 6px 12px;
           border-radius: 4px;
@@ -307,40 +307,14 @@
           } catch (e) { console.log("Trình duyệt chặn âm thanh kkk"); }
       }
 
-      // 🕵️‍♂️ BẬT HỔ BA TẦNG BẤT BẠI - BẮT SỐNG CHROMIUM INCOGNITO 2026!
-      async function checkIsIncognito() {
-          if (isAdmin) return false;
-          try {
-              // Tầng 1: Đòn khóa cứng Webkit Temporary Storage (Trình duyệt thường gõ phát ăn ngay, ẩn danh văng lỗi cmnl)
-              if (navigator.webkitTemporaryStorage && navigator.webkitTemporaryStorage.queryUsageAndQuota) {
-                  const isIncognitoStorage = await new Promise(resolve => {
-                      navigator.webkitTemporaryStorage.queryUsageAndQuota(
-                          () => resolve(false), 
-                          () => resolve(true)   
-                      );
-                  });
-                  if (isIncognitoStorage) return true;
-              }
-
-              // Tầng 2: Bẫy phụ check thông qua IndexedDB chặn ghi đè của tab ẩn danh
-              const isIncognitoDB = await new Promise(resolve => {
-                  const db = indexedDB.open("test_incognito_v3");
-                  db.onsuccess = () => resolve(false);
-                  db.onerror = () => resolve(true);
-              });
-              if (isIncognitoDB) return true;
-              
-              // Tầng 3: Check bẫy quota đĩa cứng phòng thủ chiều sâu
-              if (navigator.storage && navigator.storage.estimate) {
-                  const { quota } = await navigator.storage.estimate();
-                  if (quota && quota < 120 * 1024 * 1024) return true;
-              }
-              return false;
-          } catch (e) { return false; }
+      // 👑 HÀM UY TÍN: Cho phép Admin/Người nhà tự cấp Token mở khóa tốc độ cao kkk
+      function verifyTrustedUser() {
+          localStorage.setItem("hc_trusted_device", "verified_2026_vip");
+          location.reload();
       }
 
-      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN Real-time
-      async function adjustTrafficSpeed() {
+      // ĐÒN 5 + ĐÒN 9 + ĐÒN 10: THUẬT TOÁN ĐIỀU TỐC TOÀN DIỆN (BẤT BẠI TRƯỚC INCOGNITO)
+      function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
           if (elapsedSession >= MAX_SESSION_TIME) {
@@ -368,12 +342,12 @@
               return;
           }
 
-          // Kích hoạt bùa quét ẩn danh 3 tầng đồng bộ cứng
-          const isIncognito = await checkIsIncognito();
+          // 🛡️ ĐÒN QUÉT TÂM LÝ: Ẩn danh bật lên sẽ KHÔNG CÓ Token lưu trữ cũ cmnl!
+          const isTrusted = localStorage.getItem("hc_trusted_device") === "verified_2026_vip";
 
-          if (isIncognito) {
+          if (!isTrusted && !isAdmin) {
               cycleTime = 30000;
-              indicator.innerText = "Tự động cập nhật: 30s/lần (Chế độ khách ẩn danh)";
+              indicator.innerHTML = `Tự động cập nhật: 30s/lần (Khách chưa định danh) <span style="color:#89b4fa; font-weight:bold; cursor:pointer; text-decoration:underline; margin-left:5px;" onclick="verifyTrustedUser()">[XÁC MINH NGƯỜI NHÀ KHUM DELAY]</span>`;
               indicator.style.color = "#f38ba8";
               return;
           }
@@ -385,7 +359,7 @@
               return;
           }
 
-          // Điều tốc cho người nhà / khách thường húp mượt mà khum nhận nhầm kkk
+          // Luồng mượt mà dành riêng cho thiết bị đã bấm nút xác minh / F5 khum lo mất kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -409,7 +383,7 @@
           if (document.getElementById('log-box') === null) return;
           if (!isTabActive || isScrolledUp || !navigator.onLine) return;
 
-          await adjustTrafficSpeed();
+          adjustTrafficSpeed();
 
           const logBox = document.getElementById('log-box');
           const statusDot = document.getElementById('status-dot');
@@ -509,13 +483,13 @@
           });
       }
 
-      async function updateCountdown() {
+      function updateCountdown() {
           if (!isTabActive || isScrolledUp || !navigator.onLine) {
               requestAnimationFrame(updateCountdown);
               return;
           }
 
-          await adjustTrafficSpeed();
+          adjustTrafficSpeed();
 
           const now = performance.now();
           const elapsedTime = now - lastFetchTime;
@@ -524,7 +498,7 @@
           document.getElementById('countdown-bar').style.width = percentage + '%';
 
           if (elapsedTime >= cycleTime) {
-              await fetchLiveLogs();
+              fetchLiveLogs();
           }
 
           requestAnimationFrame(updateCountdown);
@@ -549,7 +523,7 @@
           `;
       }
 
-      document.addEventListener("visibilitychange", async () => {
+      document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
               isTabActive = false;
               afkTimeoutId = setTimeout(() => triggerAnnihilation("SESSION_EXPIRED"), MAX_AFK_TIME);
@@ -559,28 +533,26 @@
               isTabActive = true;
               if (afkTimeoutId) { clearTimeout(afkTimeoutId); afkTimeoutId = null; }
               lastFetchTime = performance.now();
-              await fetchLiveLogs();
+              fetchLiveLogs();
           }
       });
 
       const logBoxElement = document.getElementById('log-box');
-      logBoxElement.addEventListener('scroll', async () => {
+      logBoxElement.addEventListener('scroll', () => {
           const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 5;
           if (!isAtBottom) {
-              if (!isScrolledUp) { isScrolledUp = true; await adjustTrafficSpeed(); }
+              if (!isScrolledUp) { isScrolledUp = true; adjustTrafficSpeed(); }
           } else {
-              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); await adjustTrafficSpeed(); await fetchLiveLogs(); }
+              if (isScrolledUp) { isScrolledUp = false; lastFetchTime = performance.now(); adjustTrafficSpeed(); fetchLiveLogs(); }
           }
       });
 
-      window.addEventListener('online', async () => { lastFetchTime = performance.now(); await fetchLiveLogs(); });
-      window.addEventListener('offline', async () => { await adjustTrafficSpeed(); });
+      window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
+      window.addEventListener('offline', () => { adjustTrafficSpeed(); });
 
-      // Khởi động trạm ngầm hệ VIP 2026
-      (async () => {
-          await fetchLiveLogs();
-          requestAnimationFrame(updateCountdown);
-      })();
+      // Khởi động trạm
+      fetchLiveLogs();
+      requestAnimationFrame(updateCountdown);
   </script>
 </body>
 </html>
