@@ -1,5 +1,11 @@
 [
     {
+        "time": "06:00:47",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
         "time": "05:58:47",
         "type": "info",
         "tag": "EduRank XP",
@@ -172,11 +178,5 @@
         "type": "success",
         "tag": "System",
         "msg": "Trạm tổng đã vào vị trí gác đền. Hệ thống Core Engine sẵn sàng 24/7 cmnl!"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "MyNekoBot",
-        "msg": "Đã kích hoạt đặc vụ MyNekoBot chạy ngầm từ thư mục my-neko-bot! kkk"
     }
 ]
