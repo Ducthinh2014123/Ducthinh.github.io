@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HidenCloud Bot Bypass Dashboard</title>
+  
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfMQ_osAAAAAKA_xI5FzZkPsmAIrFm-rHADUK6U"></script>
+
   <style>
       *, *::before, *::after {
           box-sizing: border-box;
@@ -207,6 +210,18 @@
       .log-bypass .log-tag { background-color: rgba(203, 166, 247, 0.2); color: #cba6f7; }
 
       footer { text-align: center; padding: 20px; font-size: 12px; color: #585b70; border-top: 1px solid #181825; margin-top: auto; }
+      
+      /* reCAPTCHA badge styling - Ẩn bớt cái logo reCAPTCHA cho đỡ vướng nhem kkk */
+      .grecaptcha-badge { 
+          bottom: 10px !important; 
+          right: 10px !important; 
+          box-shadow: 0 0 10px rgba(0,0,0,0.5) !important; 
+          border-radius: 5px !important;
+          overflow: hidden !important;
+          transition: all 0.3s ease !important;
+          opacity: 0.2; /* Mặc định ẩn mờ mờ kkk */
+      }
+      .grecaptcha-badge:hover { opacity: 1; } /* Di chuột vào mới hiện rõ */
   </style>
 </head>
 <body>
@@ -243,7 +258,7 @@
               </div>
               <div class="log-container" id="log-box">
                   <div class="log-entry log-info">
-                      <span class="log-time"> [Hệ thống] </span><span class="log-tag">System</span> Đang kết nối tới máy chủ Flask HidenCloud để hốt log... kkk
+                      <span class="log-time"> [Hệ thống] </span><span class="log-tag">System</span> Đang bảo mật kết nối với Google reCAPTCHA v3... kkk
                   </div>
               </div>
           </div>
@@ -256,9 +271,12 @@
 
   <script>
       // ==============================================================================
-      // 🧠 TRẠM GÁC CỔNG PURE FLASK HTTP - BẢN BUILD ĐÓNG HÒM BẤT TỬ KKK ⚡
+      // 🧠 CẤU HÌNH HỆ THỐNG - BẢN BUILD ĐÓNG HÒM kkk ⚡
       // ==============================================================================
       const BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
+      // Thay YOUR_SITE_KEY bằng Site Key thực tế của bạn
+      const RECAPTCHA_SITE_KEY = "6LfMQ_osAAAAAKA_xI5FzZkPsmAIrFm-rHADUK6U";
+      
       let cycleTime = 5000; // Cứng 5 giây chu kỳ gốc bàn thờ
       
       const MAX_SESSION_TIME = 3600000; // Đòn 10: Xem 1 tiếng tự hủy diệt
@@ -273,6 +291,7 @@
       let isUserScrolling = false; // Chốt bảo vệ: Chỉ tính khi Admin thực sự cuộn tay!
       let afkTimeoutId = null;
       let lastManualReloadTime = 0;
+      let currentCaptchaToken = null; // Lưu token captcha hiện tại
 
       function playBeepSound(frequency, duration) {
           if (!isTabActive || isScrolledUp || !navigator.onLine) return;
@@ -341,6 +360,23 @@
           }
       }
 
+      // ==============================================================================
+      // 🧠 LẤY TOKEN reCAPTCHA v3 TRƯỚC KHI FETCH LOGS kkk ⚡
+      // ==============================================================================
+      async function getRecaptchaToken() {
+          return new Promise((resolve) => {
+              grecaptcha.ready(async () => {
+                  try {
+                      const token = await grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'fetch_logs'});
+                      resolve(token);
+                  } catch (error) {
+                      console.error("Lỗi lấy token reCAPTCHA:", error);
+                      resolve(null);
+                  }
+              });
+          });
+      }
+
       async function fetchLiveLogs() {
           if (document.getElementById('log-box') === null) return;
           if (!isTabActive || isScrolledUp || !navigator.onLine) return;
@@ -354,8 +390,27 @@
           const startTime = performance.now();
           lastFetchTime = startTime;
 
+          // 1. Lấy token mới nhem bro kkk
+          statusDot.style.backgroundColor = "#fab387";
+          statusText.innerHTML = `Core Engine: SECURING... (0ms)`;
+          currentCaptchaToken = await getRecaptchaToken();
+
+          if (!currentCaptchaToken) {
+              statusDot.style.backgroundColor = "#f38ba8";
+              statusText.innerHTML = `Core Engine: ERROR (Captcha v3 Fail)`;
+              logBox.innerHTML = `<div class="log-entry log-error"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Bảo mật</span> Khum lấy được token reCAPTCHA v3 từ Google! Kiểm tra Site Key nhem bro! kkk</div>`;
+              return;
+          }
+
           try {
-              const response = await fetch(BOT_API_URL);
+              // 2. Gửi request kèm token trong Header nã vào Flask kkk
+              const response = await fetch(BOT_API_URL, {
+                  method: 'GET',
+                  headers: {
+                      'X-Recaptcha-Token': currentCaptchaToken // Gửi token bí mật nhem nhem kkk
+                  }
+              });
+
               if (!response.ok) throw new Error("Lỗi kết nối");
 
               const data = await response.json(); 
@@ -410,7 +465,7 @@
 
           isScrolledUp = false;
           isUserScrolling = false;
-          logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Clear</span> Đang làm sạch Console và nã lệnh Fetch thủ công...</div>`;
+          logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Clear</span> Đang làm sạch Console, lấy token mới và nã lệnh Fetch thủ công... kkk</div>`;
           
           statusDot.style.backgroundColor = "#fab387";
           statusText.innerHTML = `Core Engine: CLEARING... (0ms)`;
@@ -505,7 +560,7 @@
       window.addEventListener('offline', () => { adjustTrafficSpeed(); });
 
       // Khai hỏa trạm gác vĩnh viễn
-      fetchLiveLogs();
+      grecaptcha.ready(() => { fetchLiveLogs(); }); // Chờ recaptcha sẵn sàng mới fetch lần đầu kkk
       requestAnimationFrame(updateCountdown);
   </script>
 </body>
