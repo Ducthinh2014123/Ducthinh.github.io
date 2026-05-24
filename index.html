@@ -256,13 +256,13 @@
 
   <script>
       // ==============================================================================
-      // 🧠 THUẬT TOÁN ĐỚP LOG FLASK HTTP THUẦN KHIẾT - ANTI AUTO-SCROLL BUG VIP ⚡
+      // 🧠 TRẠM GÁC CỔNG PURE FLASK HTTP - BẢN BUILD ĐÓNG HÒM BẤT TỬ KKK ⚡
       // ==============================================================================
       const BOT_API_URL = "http://noel.hidencloud.com:24606/get-logs";
-      let cycleTime = 5000; // Cứng 5 giây chu kỳ gốc bàn thờ kkk
+      let cycleTime = 5000; // Cứng 5 giây chu kỳ gốc bàn thờ
       
-      const MAX_SESSION_TIME = 3600000; // Đòn bảo vệ: Xem 1 tiếng tự hủy diệt
-      const MAX_AFK_TIME = 900000;      // Đòn ẩn tab: Đổi tab 15 phút tự ngắt kết nối
+      const MAX_SESSION_TIME = 3600000; // Đòn 10: Xem 1 tiếng tự hủy diệt
+      const MAX_AFK_TIME = 900000;      // Đòn 5: Đổi tab 15 phút tự ngắt kết nối
 
       let lastFetchTime = performance.now();
       const startTimeSession = performance.now();
@@ -270,6 +270,7 @@
       let isFirstLoad = true;
       let isTabActive = true;
       let isScrolledUp = false; // Trạng thái Admin đang giữ chuột đọc log cũ
+      let isUserScrolling = false; // Chốt bảo vệ: Chỉ tính khi Admin thực sự cuộn tay!
       let afkTimeoutId = null;
       let lastManualReloadTime = 0;
 
@@ -289,7 +290,6 @@
           } catch (e) {}
       }
 
-      // 🔥 THUẬT TOÁN ĐIỀU TỐC TỰ ĐỘNG BẢO VỆ CON FLASK TRÊN VPS
       function adjustTrafficSpeed() {
           const elapsedSession = performance.now() - startTimeSession;
           
@@ -312,14 +312,14 @@
               return;
           }
 
-          // Kiểm tra nếu Admin đang rê chuột vào bảng log cũ
+          // Kiểm tra nếu Admin thực sự đang cuộn tay đọc log cũ
           if (isScrolledUp) {
               indicator.innerText = "⏸️ Đã tạm dừng cập nhật (Đang đọc log cũ)";
               indicator.style.color = "#cba6f7";
               return;
           }
 
-          // Điều tốc tự động theo thời gian xem để cứu rỗi tài nguyên VPS kkk
+          // Hệ thống điều tốc tự động gánh tài nguyên cho VPS kkk
           if (elapsedSession > 900000) {
               if (cycleTime !== 20000) {
                   cycleTime = 20000;
@@ -379,7 +379,7 @@
                   if (log.type === 'error') playBeepSound(440, 300);
               });
 
-              // Luôn cuộn mượt xuống đáy bảng log, chấp mọi loại độ trễ render của Chrome kkk!
+              // Luôn ép cuộn xuống sát đáy mượt mà khum sợ dính delay render kkk
               logBox.scrollTop = logBox.scrollHeight;
 
           } catch (error) {
@@ -409,6 +409,7 @@
           btnClear.innerText = 'Đang tải...';
 
           isScrolledUp = false;
+          isUserScrolling = false;
           logBox.innerHTML = `<div class="log-entry log-warning"><span class="log-time"> [Hệ thống] </span><span class="log-tag">Clear</span> Đang làm sạch Console và nã lệnh Fetch thủ công...</div>`;
           
           statusDot.style.backgroundColor = "#fab387";
@@ -454,24 +455,39 @@
           `;
       }
 
-      // 🔥 THUẬT TOÁN GÁC CỔNG THỰC CHIẾN MỚI: BẮT THEO HÀNH VI CHUỘT ADMIN, CHẤP MỌI LOẠI BUG CUỘN LỎ CỦA CHROME!
+      // ==============================================================================
+      // 🛡️ ĐÒN GÁC CỔNG TỐI THƯỢNG: CHỈ TẠM DỪNG KHI ADMIN THỰC SỰ DÙNG TAY CUỘN TRANG!
+      // ==============================================================================
       const logBoxElement = document.getElementById('log-box');
 
-      // Khi Admin di chuột vào bảng log: Tạm dừng luồng để thong thả đọc log cũ
-      logBoxElement.addEventListener('mouseenter', () => {
-          isScrolledUp = true;
-          adjustTrafficSpeed();
+      // Bẫy hành vi: Chỉ kích hoạt khi Admin dùng bánh xe chuột hoặc lướt màn hình cảm ứng kkk
+      logBoxElement.addEventListener('wheel', () => { isUserScrolling = true; });
+      logBoxElement.addEventListener('touchmove', () => { isUserScrolling = true; });
+
+      logBoxElement.addEventListener('scroll', () => {
+          // Nếu hệ thống tự cuộn bằng code (scrollTop = scrollHeight) thì bỏ qua hoàn toàn!
+          if (!isUserScrolling) return;
+
+          const isAtBottom = logBoxElement.scrollHeight - logBoxElement.scrollTop <= logBoxElement.clientHeight + 20;
+          
+          if (!isAtBottom) {
+              if (!isScrolledUp) { 
+                  isScrolledUp = true; 
+                  adjustTrafficSpeed(); 
+              }
+          } else {
+              // Nếu Admin tự tay cuộn xuống sát đáy: Mở khóa xích chạy tiếp 5s bàn thờ cmnl!
+              if (isScrolledUp) { 
+                  isScrolledUp = false; 
+                  isUserScrolling = false;
+                  lastFetchTime = performance.now(); 
+                  adjustTrafficSpeed(); 
+                  fetchLiveLogs(); 
+              }
+          }
       });
 
-      // Khi Admin bỏ chuột ra ngoài: Tiếp tục đếm ngược hốt log real-time lập tức kkk
-      logBoxElement.addEventListener('mouseleave', () => {
-          isScrolledUp = false;
-          lastFetchTime = performance.now();
-          adjustTrafficSpeed();
-          fetchLiveLogs();
-      });
-
-      // Bắt sự kiện ẩn tab hoặc đổi tab
+      // Bắt sự kiện đổi tab / ẩn màn hình
       document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
               isTabActive = false;
@@ -488,7 +504,7 @@
       window.addEventListener('online', () => { lastFetchTime = performance.now(); fetchLiveLogs(); });
       window.addEventListener('offline', () => { adjustTrafficSpeed(); });
 
-      // Khởi động trạm gác vĩnh viễn
+      // Khai hỏa trạm gác vĩnh viễn
       fetchLiveLogs();
       requestAnimationFrame(updateCountdown);
   </script>
