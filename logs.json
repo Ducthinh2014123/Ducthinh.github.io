@@ -1,5 +1,107 @@
 [
     {
+        "time": "05:44:25",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:25",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:24",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:24",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:24",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:23",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:23",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:23",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:22",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:22",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:21",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:21",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:21",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:20",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:20",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:19",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
+        "time": "05:44:19",
+        "type": "info",
+        "tag": "EduRank XP",
+        "msg": "Thành viên toilathangvnxd vừa chat nhận +5 XP vào levels.db kkk."
+    },
+    {
         "time": "05:44:03",
         "type": "info",
         "tag": "EduRank XP",
@@ -76,41 +178,5 @@
         "type": "success",
         "tag": "Env",
         "msg": "Đã nạp thành công file: Edurank/.env"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "Gemini",
-        "msg": "Đã bật Bot Gemini từ thư mục con chạy ngầm!"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "Env",
-        "msg": "Đã nạp thành công file: gemini-bot/.env"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "Bot Cũ",
-        "msg": "Đã bật Bot Cũ (Bacon) chạy ngầm vĩnh viễn!"
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "Env",
-        "msg": "Đã nạp thành công file: .env"
-    },
-    {
-        "time": "05:31:16",
-        "type": "info",
-        "tag": "System",
-        "msg": "Đang kích hoạt chế độ chạy đa file .env độc lập..."
-    },
-    {
-        "time": "05:31:16",
-        "type": "success",
-        "tag": "Sponsor",
-        "msg": "Hệ thống vận hành AUTO 24/7 nhờ bùa lợi hosting console docker trâu bò từ HIDENCLOUD và Hosting web từ github pages! Tri ân vcl kkk! ❤️"
     }
 ]
