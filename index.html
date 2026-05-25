@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HidenCloud Dashboard</title>
+    <title>HidenCloud Bot Bypass Dashboard</title>
     
     <script src="https://www.google.com/recaptcha/api.js?render=6LfMQ_osAAAAAKA_xI5FzZkPsmAIrFm-rHADUK6U"></script>
 
     <style>
-        body { margin: 0; background-color: #0b0f19; font-family: 'Segoe UI', sans-serif; color: #cdd6f4; display: flex; flex-direction: column; min-height: 100vh; }
+        body { margin: 0; background-color: #0b0f19; font-family: 'Segoe UI', Tahoma, sans-serif; color: #cdd6f4; display: flex; flex-direction: column; min-height: 100vh; }
         header { background: linear-gradient(135deg, #1e1e2e 0%, #11111b 100%); padding: 20px 40px; border-bottom: 2px solid #89b4fa; display: flex; justify-content: space-between; align-items: center; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-icon { width: 40px; height: 40px; background: #89b4fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #11111b; }
         main { flex: 1; padding: 40px; max-width: 1400px; width: 100%; margin: 0 auto; }
         .panel { background-color: #1e1e2e; border: 1px solid #313244; border-radius: 12px; overflow: hidden; }
-        .panel-header { background-color: #181825; padding: 18px 24px; border-bottom: 1px solid #313244; display: flex; justify-content: space-between; }
+        .panel-header { background-color: #181825; padding: 18px 24px; border-bottom: 1px solid #313244; }
         .log-container { height: 550px; overflow-y: auto; padding: 15px; background-color: #11111b; font-family: 'Courier New', monospace; font-size: 13px; }
-        .log-entry { padding: 6px 12px; border-bottom: 1px solid #181825; display: block; }
+        
+        /* Log Styles */
+        .log-entry { padding: 6px 12px; border-bottom: 1px solid #181825; border-left: 3px solid transparent; margin-bottom: 2px; }
         .log-time { color: #6c7086; margin-right: 10px; font-weight: bold; }
         .log-tag { padding: 2px 6px; border-radius: 3px; font-size: 11px; margin-right: 8px; background-color: #313244; }
+        
+        /* Color Coding */
+        .log-error { border-left-color: #f38ba8; color: #f38ba8; background-color: rgba(243, 139, 168, 0.05); }
+        .log-success { border-left-color: #a6e3a1; color: #a6e3a1; }
+        .log-info { border-left-color: #89b4fa; }
     </style>
 </head>
 <body>
@@ -34,7 +41,7 @@
     <main>
         <div class="panel">
             <div class="panel-header">
-                <div class="panel-title">⚡ LIVE STREAM CONSOLE LOG SYSTEM</div>
+                ⚡ LIVE STREAM CONSOLE LOG SYSTEM
             </div>
             <div class="log-container" id="log-box">
                 <div class="log-entry">Đang khởi tạo kết nối...</div>
@@ -48,36 +55,39 @@
 
         async function fetchLogs() {
             try {
-                // 1. Gọi reCAPTCHA v3
+                // Lấy token từ reCAPTCHA v3
                 grecaptcha.ready(async () => {
                     const token = await grecaptcha.execute(SITE_KEY, {action: 'fetch_logs'});
                     
-                    // 2. Fetch log kèm token
                     const response = await fetch(BOT_API_URL, {
                         method: 'GET',
                         headers: { 'X-Recaptcha-Token': token }
                     });
                     
-                    const data = await response.json();
+                    const data = await response.json(); // Server trả về array object: {time, tag, msg, type}
                     const logBox = document.getElementById('log-box');
                     
-                    // 3. Render log
                     logBox.innerHTML = "";
                     data.forEach(log => {
                         const div = document.createElement('div');
-                        div.className = `log-entry`;
-                        div.innerHTML = `<span class="log-time">[${log.time}]</span> <span class="log-tag">${log.tag}</span> ${log.msg}`;
+                        // Tự động gán class theo thuộc tính 'type' từ server (info, success, error)
+                        div.className = `log-entry log-${log.type || 'info'}`;
+                        div.innerHTML = `
+                            <span class="log-time">[${log.time}]</span> 
+                            <span class="log-tag">${log.tag}</span> 
+                            ${log.msg}
+                        `;
                         logBox.appendChild(div);
                     });
                     logBox.scrollTop = logBox.scrollHeight;
                 });
             } catch (error) {
                 document.getElementById('status-badge').innerText = "Core Engine: ERROR";
-                console.error("Lỗi:", error);
+                console.error("Lỗi fetch log:", error);
             }
         }
 
-        // Cập nhật mỗi 5 giây
+        // Tự động cập nhật mỗi 5 giây
         setInterval(fetchLogs, 5000);
         fetchLogs();
     </script>
